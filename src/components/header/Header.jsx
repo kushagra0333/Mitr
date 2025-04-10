@@ -20,35 +20,7 @@ const Header = () => {
             Login
           </Button>
 
-          {/* Dropdown Menu without arrow */}
-          <NavDropdown
-            title={<ThreeDotsVertical />} // Three dots for the dropdown icon
-            id="navbar-dropdown"
-            align="end"
-            menuVariant="light"
-            className="no-arrow animated-dropdown" // Adding custom class to remove the arrow
-            drop="down" // Ensures dropdown opens downward
-            popperConfig={{
-              modifiers: [
-                {
-                  name: 'offset',
-                  options: {
-                    offset: [0, 10], // Adjust offset to ensure it stays outside
-                  },
-                },
-                {
-                  name: 'preventOverflow',
-                  options: {
-                    boundary: 'viewport', // Makes dropdown stay within the viewport
-                  },
-                },
-              ],
-            }}
-          >
-            <NavDropdown.Item href="#">Item 1</NavDropdown.Item>
-            <NavDropdown.Item href="#">Item 2</NavDropdown.Item>
-            <NavDropdown.Item href="#">Item 3</NavDropdown.Item>
-          </NavDropdown>
+         
         </Nav>
       </Container>
     </Navbar>

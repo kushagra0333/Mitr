@@ -23,10 +23,10 @@ function About() {
         {/* Text Section */}
         <Col md={6}>
           <div className="text-secondary text-uppercase mb-3" style={{ fontSize: '0.8rem' }}>
-            Welcome to RegisterKaro.in
+            Welcome to mitr.com
           </div>
           <h2 className="text-primary font-weight-bold mb-4">
-            About <span className="text-primary">Register Karo</span>
+            About <span className="text-primary">Mitr</span>
           </h2>
           <p className="mt-3 mb-4 text-dark">{text.description}</p>
           <Button variant="primary" className="d-flex align-items-center py-2 px-4 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300">
