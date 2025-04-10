@@ -1,0 +1,17 @@
+/* Custom CSS to ensure dropdown stays outside the navbar */
+.no-arrow .dropdown-toggle::after {
+  display: none !important; /* Hide the default arrow */
+}
+
+.animated-dropdown .dropdown-menu {
+  position: absolute !important; /* Ensure the dropdown is positioned outside */
+  z-index: 9999; /* Makes sure it stays on top */
+}
+
+/* Optional: Adjust padding or margins to avoid overflow issues */
+@media (max-width: 768px) {
+  .animated-dropdown .dropdown-menu {
+    left: auto !important; /* Ensure it doesn't overflow to the left */
+    right: 0 !important; /* Ensure it aligns to the right of the parent */
+  }
+}
