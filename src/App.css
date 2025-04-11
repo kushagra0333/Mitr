@@ -1,0 +1,18 @@
+:root {
+    --bs-primary: #007BFF;
+    --bs-primary-rgb: 0, 123, 255;
+    --bs-secondary: #17a2b8;
+    --bs-secondary-rgb: 23, 162, 184;
+    --bs-dark: #343a40;
+    --bs-light: #f8f9fa;
+    --bs-body-color: #343a40;
+    --bs-font-sans-serif: 'Roboto', sans-serif;
+  }
+  
+  /* Optional: Override button hover/focus for better contrast */
+  .btn-primary:hover,
+  .btn-primary:focus {
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
+  

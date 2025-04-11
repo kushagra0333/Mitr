@@ -1,27 +1,20 @@
 import React from 'react';
-import { Navbar, Nav, Container, NavDropdown, Button } from 'react-bootstrap';
-import { ThreeDotsVertical } from 'react-bootstrap-icons'; // Using ThreeDots for the icon
-import './Header.css';
+import { Navbar, Container, Button } from 'react-bootstrap';
 
 const Header = () => {
   return (
-    <Navbar expand="lg" bg="primary" variant="primary">
-      <Container>
-        {/* Logo and Image Section */}
-        <Navbar.Brand href="#" className="d-flex align-items-center">
-          <img src="" alt="Logo" style={{ height: '40px', marginRight: '10px' }} />
-          <h4 className="m-0">MITR</h4>
+    <Navbar expand="lg" bg="primary" variant="dark" className="shadow-sm">
+      <Container className="d-flex justify-content-between align-items-center">
+        {/* Logo and Brand */}
+        <Navbar.Brand href="#" className="d-flex align-items-center text-white">
+          <img src="/logo.png" alt="MITR Logo" style={{ height: '40px', marginRight: '10px' }} />
+          <h4 className="mb-0">MITR</h4>
         </Navbar.Brand>
 
-        {/* Right-side navigation and buttons */}
-        <Nav className="ml-auto d-flex align-items-center flex-row">
-          {/* Login Button */}
-          <Button variant="outline-dark mr-5" className="">
-            Login
-          </Button>
-
-         
-        </Nav>
+        {/* Login Button */}
+        <Button variant="light" className="text-primary fw-semibold">
+          Login
+        </Button>
       </Container>
     </Navbar>
   );

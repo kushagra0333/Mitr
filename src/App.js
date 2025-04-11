@@ -5,6 +5,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import Header from "./components/header/Header";
 import SubHeader from "./components/sub-header/subHeader";
 import Home from "./pages/home";
+import Footer from "./components/footer/footer"
 function App() {
   return (
     <Router basename="/">
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
       </Routes>
+      <Footer />
     </Router>
   );
 }

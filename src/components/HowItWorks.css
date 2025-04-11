@@ -1,0 +1,35 @@
+.timeline-step {
+    position: relative;
+    padding-bottom: 2rem;
+  }
+  
+  .icon-circle {
+    background-color: #ffffff;
+    border: 2px solid #007bff;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.15);
+    transition: transform 0.3s ease;
+  }
+  
+  .icon-circle:hover {
+    transform: scale(1.1);
+  }
+  
+  .arrow-icon {
+    animation: bounce 2s infinite;
+  }
+  
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(8px);
+    }
+  }
+  
