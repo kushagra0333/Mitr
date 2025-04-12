@@ -5,7 +5,8 @@ import Image1 from '../assets/image.jpg';
 const Hero = () => {
   return (
     <Container className="py-4">
-      <Carousel controls indicators fade className="rounded-4 overflow-hidden shadow">
+      {/* Removed 'fade' prop for slide effect */}
+      <Carousel controls indicators className="rounded-4 overflow-hidden shadow">
         <Carousel.Item>
           <img
             src={Image1}

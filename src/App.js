@@ -6,6 +6,7 @@ import Header from "./components/header/Header";
 import SubHeader from "./components/sub-header/subHeader";
 import Home from "./pages/home";
 import Footer from "./components/footer/footer"
+import Device from "./pages/device"
 function App() {
   return (
     <Router basename="/">
@@ -13,6 +14,7 @@ function App() {
       <SubHeader />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/device" element={<Device />} />
       </Routes>
       <Footer />
     </Router>
