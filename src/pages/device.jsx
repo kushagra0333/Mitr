@@ -233,15 +233,22 @@ const Device = () => {
 
   return (
     <Container className="py-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h4 className="fw-bold text-dark">👋 Hello, Mitr</h4>
-          <p className="text-muted">Your Linked Devices ({devices.length} Total)</p>
-        </div>
-        <Button variant="primary" className="d-flex align-items-center" onClick={handleAddDeviceModal}>
-          <FaPlus className="me-2" /> Add New Device
-        </Button>
-      </div>
+     <Row className="align-items-center mb-4">
+  <Col xs={12} md={8} className="mb-2 mb-md-0">
+    <h4 className="fw-bold text-dark">👋 Hello, Mitr</h4>
+    <p className="text-muted">Your Linked Devices ({devices.length} Total)</p>
+  </Col>
+  <Col xs={12} md={4} className="text-md-end">
+    <Button
+      variant="primary"
+      className="w-100 w-md-auto d-flex align-items-center justify-content-center"
+      onClick={handleAddDeviceModal}
+    >
+      <FaPlus className="me-2" /> Add New Device
+    </Button>
+  </Col>
+</Row>
+
 
       {devices.map((device) => (
         <Card key={device.id} className="mb-4 shadow-sm rounded-4">
@@ -250,7 +257,14 @@ const Device = () => {
               <Col md={6}>
                 <h5 className="fw-bold mb-2">🛡️ Device Name: {device.name}</h5>
                 <p className="mb-1">📶 <strong>Signal:</strong> {device.signal}</p>
-                <p className="mb-1"><strong className="me-2"><FaMapMarkerAlt /> Tracking:</strong><button className="btn btn-outline-success me-2">Start Tracking</button><button className="btn btn-outline-danger">Stop Tracking</button></p>
+                <div className="mb-3">
+  <div className="mb-2"><strong><FaMapMarkerAlt /> Tracking:</strong></div>
+  <div className="d-flex flex-column flex-sm-row gap-2">
+    <button className="btn btn-outline-success">Start Tracking</button>
+    <button className="btn btn-outline-danger">Stop Tracking</button>
+  </div>
+</div>
+
                 <p className="mb-1">📅 <strong>Activated On:</strong> {device.activatedOn}</p>
               </Col>
               <Col md={6}>
@@ -268,19 +282,7 @@ const Device = () => {
                   <Button variant="outline-secondary" onClick={() => handleEdit(device)}><FaEdit /> Edit</Button>
                   <Button variant="outline-warning"><FaExclamationTriangle /> Test SOS</Button>
                   <Button variant="outline-danger"><FaUnlink /> Unlink</Button>
-                  {/* Start/Stop Tracking Button */}
-                  <Button
-                    variant={device.tracking ? "success" : "outline-success"}
-                    onClick={() => toggleTracking(device.id)}
-                  >
-                    {device.tracking ? "Stop Tracking" : "Start Tracking"}
-                  </Button>
-                  {/* Show Map Button */}
-                  {device.tracking && (
-                    <Button variant="outline-primary" onClick={handleShowMap}>
-                      Show Tracked Map
-                    </Button>
-                  )}
+                  
                 </div>
               </Col>
             </Row>
