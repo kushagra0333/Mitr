@@ -184,7 +184,6 @@ const Device = () => {
     {
       id: 1,
       name: "MITR_01",
-      signal: "Good",
       activatedOn: "04 Mar 2025",
       contacts: [
         { name: "Dad", phone: "+91 XXXXXXXX12", modes: "WhatsApp + SMS" },
@@ -256,12 +255,11 @@ const Device = () => {
             <Row className="mb-3">
               <Col md={6}>
                 <h5 className="fw-bold mb-2">🛡️ Device Name: {device.name}</h5>
-                <p className="mb-1">📶 <strong>Signal:</strong> {device.signal}</p>
                 <div className="mb-3">
   <div className="mb-2"><strong><FaMapMarkerAlt /> Tracking:</strong></div>
   <div className="d-flex flex-column flex-sm-row gap-2">
-    <button className="btn btn-outline-success">Start Tracking</button>
     <button className="btn btn-outline-danger">Stop Tracking</button>
+    <button className="btn btn-outline-success">View Tracking</button>
   </div>
 </div>
 
