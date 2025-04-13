@@ -7,6 +7,7 @@ import SubHeader from "./components/sub-header/subHeader";
 import Home from "./pages/home";
 import Footer from "./components/footer/footer"
 import Device from "./pages/device"
+import MyProfile from "./pages/profile";
 function App() {
   return (
     <Router basename="/">
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/device" element={<Device />} />
+        <Route path="/my-profile" element={<MyProfile />}/>
       </Routes>
       <Footer />
     </Router>

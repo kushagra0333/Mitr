@@ -1,42 +1,56 @@
 import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
-import { FaHome, FaRunning, FaMobileAlt, FaUserAlt } from 'react-icons/fa';
-import { Link, useLocation } from 'react-router-dom'; // useLocation to detect current path
+import { FaHome, FaMobileAlt, FaUserAlt } from 'react-icons/fa';
+import { Link, useLocation } from 'react-router-dom';
 
 const Subheader = () => {
   const location = useLocation();
-
-  const links = [
-    { to: '/', icon: <FaHome size={18} />, label: 'Home' },
-    { to: '/tracking', icon: <FaRunning size={18} />, label: 'Tracking' },
-    { to: '/device', icon: <FaMobileAlt size={18} />, label: 'Device' },
-    { to: '/my-profile', icon: <FaUserAlt size={18} />, label: 'My' },
-    { to: '/products', icon: <FaUserAlt size={18} />, label: 'Products' },
-  ];
 
   return (
     <Navbar bg="light" className="shadow-sm sticky-top border-top border-primary">
       <Container className="justify-content-around">
         <Nav className="w-100 d-flex justify-content-between text-center">
-          {links.map(({ to, icon, label }) => {
-            const isActive = location.pathname === to;
 
-            return (
-              <Nav.Item key={to}>
-                <Link
-                  to={to}
-                  className={`fw-medium text-decoration-none d-flex flex-column align-items-center ${
-                    isActive ? 'text-primary' : 'text-dark'
-                  }`}
-                >
-                  <span className={isActive ? 'text-primary' : 'text-dark'}>
-                    {icon}
-                  </span>
-                  <div>{label}</div>
-                </Link>
-              </Nav.Item>
-            );
-          })}
+          <Nav.Item>
+            <Link
+              to="/"
+              className={`fw-medium text-decoration-none d-flex flex-column align-items-center ${location.pathname === '/' ? 'text-primary' : 'text-dark'}`}
+            >
+              <FaHome size={18} />
+              <div>Home</div>
+            </Link>
+          </Nav.Item>
+
+          <Nav.Item>
+            <Link
+              to="/device"
+              className={`fw-medium text-decoration-none d-flex flex-column align-items-center ${location.pathname === '/device' ? 'text-primary' : 'text-dark'}`}
+            >
+              <FaMobileAlt size={18} />
+              <div>Device</div>
+            </Link>
+          </Nav.Item>
+
+          <Nav.Item>
+            <Link
+              to="/my-profile"
+              className={`fw-medium text-decoration-none d-flex flex-column align-items-center ${location.pathname === '/my-profile' ? 'text-primary' : 'text-dark'}`}
+            >
+              <FaUserAlt size={18} />
+              <div>My</div>
+            </Link>
+          </Nav.Item>
+
+          <Nav.Item>
+            <Link
+              to="/products"
+              className={`fw-medium text-decoration-none d-flex flex-column align-items-center ${location.pathname === '/products' ? 'text-primary' : 'text-dark'}`}
+            >
+              <FaUserAlt size={18} />
+              <div>Products</div>
+            </Link>
+          </Nav.Item>
+
         </Nav>
       </Container>
     </Navbar>

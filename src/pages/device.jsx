@@ -135,47 +135,148 @@ const EditDevice = ({ show, onClose, device }) => {
     </Modal>
   );
 };
-// Reusable Bluetooth Function to Add Device
-const addDeviceBluetooth = async (setDevices, devices, setShowAddModal, setLoading) => {
-  try {
-    setLoading(true); // Start signal animation (loading)
+const RegisterDeviceModal = ({ show, onHide, onRegister }) => {
+  const [isRegistering, setIsRegistering] = useState(false); // State to toggle between registering and connecting
+  const [formData, setFormData] = useState({
+    id: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Function to connect an already registered device
+  const handleConnectDevice = async () => {
+    const { id, password } = formData;
+    if (!id || !password) {
+      alert("Please fill in all fields.");
+      return;
+    }
     
-    // Request Bluetooth device (using Web Bluetooth API)
-    const device = await navigator.bluetooth.requestDevice({
-      filters: [{ services: ['device_information'] }], // Filter by device services
-      optionalServices: ['battery_service'], // You can add more optional services if needed
-    });
+    // Backend logic for connecting to an existing device
+    try {
+      // Call the backend API to connect the device
+      const response = await fetch('/api/connectDevice', {
+        method: 'POST',
+        body: JSON.stringify({ id, password }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const result = await response.json();
 
-    // Connect to the device
-    const server = await device.gatt.connect();  // You can remove this if you're not using it
+      if (response.ok) {
+        alert("Device connected successfully.");
+        onRegister(result, false); // Pass the result and indicate no registration
+        setFormData({ id: "", password: "", confirmPassword: "" });
+        onHide();
+      } else {
+        alert(result.message || "Failed to connect device.");
+      }
+    } catch (error) {
+      alert("An error occurred while connecting the device.");
+    }
+  };
 
-    // Get device information (e.g., name, signal strength, etc.)
-    const deviceName = device.name || "Unknown Device";
-    const signalStrength = "Good"; // For example, you can get the RSSI value for signal strength
+  // Function to register a new device
+  const handleRegisterDevice = async () => {
+    const { id, password, confirmPassword } = formData;
+    if (!id || !password || !confirmPassword) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
 
-    // Create new device object
-    const newDevice = {
-      id: devices.length + 1,
-      name: deviceName,
-      signal: signalStrength,
-      activatedOn: new Date().toLocaleDateString(),
-      contacts: [],
-      triggerWords: [],
-    };
+    // Backend logic for registering a new device
+    try {
+      // Call the backend API to register the device
+      const response = await fetch('/api/registerDevice', {
+        method: 'POST',
+        body: JSON.stringify({ id, password }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const result = await response.json();
 
-    // Add new device to the devices list
-    setDevices([...devices, newDevice]);
+      if (response.ok) {
+        alert("Device registered successfully.");
+        onRegister(result, true); // Pass the result and indicate new registration
+        setFormData({ id: "", password: "", confirmPassword: "" });
+        onHide();
+      } else {
+        alert(result.message || "Failed to register device.");
+      }
+    } catch (error) {
+      alert("An error occurred while registering the device.");
+    }
+  };
 
-    // Close the modal after adding
-    setShowAddModal(false);
-    alert(`Device ${deviceName} added successfully!`);
-  } catch (error) {
-    console.error("Error connecting to Bluetooth device", error);
-    alert("Failed to add device via Bluetooth.");
-  } finally {
-    setLoading(false); // Stop signal animation (loading)
-  }
+  const handleSubmit = () => {
+    if (isRegistering) {
+      handleRegisterDevice();
+    } else {
+      handleConnectDevice();
+    }
+  };
+
+  return (
+    <Modal show={show} onHide={onHide} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>{isRegistering ? "Register New Device" : "Connect Existing Device"}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
+          <Form.Group className="mb-3">
+            <Form.Label>Device ID</Form.Label>
+            <Form.Control
+              type="text"
+              name="id"
+              value={formData.id}
+              onChange={handleChange}
+              placeholder="Enter Device ID"
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter Password"
+            />
+          </Form.Group>
+          {isRegistering && (
+            <Form.Group className="mb-3">
+              <Form.Label>Confirm Password</Form.Label>
+              <Form.Control
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Confirm Password"
+              />
+            </Form.Group>
+          )}
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onHide}>Cancel</Button>
+        <Button variant="primary" onClick={handleSubmit}>
+          {isRegistering ? "Register & Link" : "Connect"}
+        </Button>
+      </Modal.Footer>
+      <Modal.Footer>
+        <Button variant="link" onClick={() => setIsRegistering(!isRegistering)}>
+          {isRegistering ? "Already registered? Connect instead." : "Need to register a new device?"}
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
 };
+
 
 const Device = () => {
   const [selectedDevice, setSelectedDevice] = useState(null);
@@ -187,16 +288,25 @@ const Device = () => {
       activatedOn: "04 Mar 2025",
       contacts: [
         { name: "Dad", phone: "+91 XXXXXXXX12", modes: "WhatsApp + SMS" },
-        { name: "Mom", phone: "+91 XXXXXXXX34" },
-        { name: "Friend", phone: "+91 XXXXXXXX56" },
+        { name: "Mom", phone: "+91 XXXXXXXX34", modes: "WhatsApp" },
+        { name: "Friend", phone: "+91 XXXXXXXX56", modes: "SMS" },
       ],
       triggerWords: ["Help me", "Please stop"],
       tracking: false, // Tracking state
     },
+    {
+      id: 2,
+      name: "MITR_02",
+      activatedOn: "01 Apr 2025",
+      contacts: [
+        { name: "John", phone: "+1 555-1234", modes: "WhatsApp" },
+        { name: "Alice", phone: "+1 555-5678", modes: "SMS" },
+      ],
+      triggerWords: ["Emergency", "Call 911"],
+      tracking: true, // Tracking state
+    },
   ]);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [showMapModal, setShowMapModal] = useState(false); // For showing the map
+  const [showAddModal, setShowAddModal] = useState(false); // state to show the register device modal
 
   const handleEdit = (device) => {
     setSelectedDevice(device);
@@ -216,38 +326,29 @@ const Device = () => {
     setShowAddModal(false);
   };
 
-  const toggleTracking = (deviceId) => {
-    setDevices(devices.map(device =>
-      device.id === deviceId ? { ...device, tracking: !device.tracking } : device
-    ));
-  };
-
-  const handleShowMap = () => {
-    setShowMapModal(true);
-  };
-
-  const handleCloseMapModal = () => {
-    setShowMapModal(false);
+  const handleRegisterDevice = (formData) => {
+    console.log("Registered Device:", formData);
+    // Logic for registering the device goes here
+    setShowAddModal(false); // Close the modal after registering
   };
 
   return (
     <Container className="py-4">
-     <Row className="align-items-center mb-4">
-  <Col xs={12} md={8} className="mb-2 mb-md-0">
-    <h4 className="fw-bold text-dark">👋 Hello, Mitr</h4>
-    <p className="text-muted">Your Linked Devices ({devices.length} Total)</p>
-  </Col>
-  <Col xs={12} md={4} className="text-md-end">
-    <Button
-      variant="primary"
-      className="w-100 w-md-auto d-flex align-items-center justify-content-center"
-      onClick={handleAddDeviceModal}
-    >
-      <FaPlus className="me-2" /> Add New Device
-    </Button>
-  </Col>
-</Row>
-
+      <Row className="align-items-center mb-4">
+        <Col xs={12} md={8} className="mb-2 mb-md-0">
+          <h4 className="fw-bold text-dark">👋 Hello, Mitr</h4>
+          <p className="text-muted">Your Linked Devices ({devices.length} Total)</p>
+        </Col>
+        <Col xs={12} md={4} className="text-md-end">
+          <Button
+            variant="primary"
+            className="w-100 w-md-auto d-flex align-items-center justify-content-center"
+            onClick={handleAddDeviceModal}
+          >
+            <FaPlus className="me-2" /> Add Device
+          </Button>
+        </Col>
+      </Row>
 
       {devices.map((device) => (
         <Card key={device.id} className="mb-4 shadow-sm rounded-4">
@@ -256,14 +357,18 @@ const Device = () => {
               <Col md={6}>
                 <h5 className="fw-bold mb-2">🛡️ Device Name: {device.name}</h5>
                 <div className="mb-3">
-  <div className="mb-2"><strong><FaMapMarkerAlt /> Tracking:</strong></div>
-  <div className="d-flex flex-column flex-sm-row gap-2">
-    <button className="btn btn-outline-danger">Stop Tracking</button>
-    <button className="btn btn-outline-success">View Tracking</button>
-  </div>
-</div>
-
+                  <div className="mb-2"><strong><FaMapMarkerAlt /> Tracking:</strong></div>
+                  <div className="d-flex flex-column flex-sm-row gap-2">
+                    {device.tracking ? (
+                      <button className="btn btn-outline-danger">Stop Tracking</button>
+                    ) : (
+                      <button className="btn btn-outline-success">Start Tracking</button>
+                    )}
+                    <button className="btn btn-outline-primary">View Tracking</button>
+                  </div>
+                </div>
                 <p className="mb-1">📅 <strong>Activated On:</strong> {device.activatedOn}</p>
+                <p className="mb-1"><button className="btn btn-outline-primary">Connect device</button></p>
               </Col>
               <Col md={6}>
                 <p className="mb-2 fw-bold">👤 Emergency Contacts ({device.contacts.length}):</p>
@@ -275,12 +380,9 @@ const Device = () => {
                   ))}
                 </ListGroup>
                 <p className="mb-3">🎯 <strong>Trigger Words:</strong> [{device.triggerWords.map(t => `"${t}"`).join(", ")}]</p>
-
                 <div className="d-flex gap-2">
                   <Button variant="outline-secondary" onClick={() => handleEdit(device)}><FaEdit /> Edit</Button>
-                  <Button variant="outline-warning"><FaExclamationTriangle /> Test SOS</Button>
-                  <Button variant="outline-danger"><FaUnlink /> Unlink</Button>
-                  
+                  <Button variant="outline-danger"><FaUnlink /> Remove device</Button>
                 </div>
               </Col>
             </Row>
@@ -288,43 +390,15 @@ const Device = () => {
         </Card>
       ))}
 
-      {/* Reusable Modal Component */}
+      {/* Register Device Modal */}
+      <RegisterDeviceModal
+        show={showAddModal}
+        onHide={handleCloseAddDeviceModal}
+        onRegister={handleRegisterDevice}
+      />
+
+      {/* Edit Device Modal */}
       <EditDevice show={showEdit} onClose={handleClose} device={selectedDevice} />
-
-      {/* Add Device Modal */}
-      <Modal show={showAddModal} onHide={handleCloseAddDeviceModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add New Device via Bluetooth</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>To add a new device via Bluetooth, ensure the device is nearby and ready for connection.</p>
-          {loading ? (
-            <div className="d-flex justify-content-center">
-              <Spinner animation="border" variant="primary" />
-              <span className="ms-2">Searching for devices...</span>
-            </div>
-          ) : (
-            <Button variant="outline-primary" onClick={() => addDeviceBluetooth(setDevices, devices, setShowAddModal, setLoading)}>
-              <FaBluetooth className="me-2" /> Add Device
-            </Button>
-          )}
-        </Modal.Body>
-      </Modal>
-
-      {/* Show Tracked Map Modal */}
-      <Modal show={showMapModal} onHide={handleCloseMapModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Tracked Device Map</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>The map showing the tracked path will be displayed here.</p>
-          {/* Placeholder for the actual map component */}
-          {/* Integrate a map library like Google Maps, Leaflet, etc., to show the tracking path */}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseMapModal}>Close</Button>
-        </Modal.Footer>
-      </Modal>
     </Container>
   );
 };
