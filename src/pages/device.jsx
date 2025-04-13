@@ -359,11 +359,9 @@ const Device = () => {
                 <div className="mb-3">
                   <div className="mb-2"><strong><FaMapMarkerAlt /> Tracking:</strong></div>
                   <div className="d-flex flex-column flex-sm-row gap-2">
-                    {device.tracking ? (
+                    
                       <button className="btn btn-outline-danger">Stop Tracking</button>
-                    ) : (
-                      <button className="btn btn-outline-success">Start Tracking</button>
-                    )}
+                   
                     <button className="btn btn-outline-primary">View Tracking</button>
                   </div>
                 </div>

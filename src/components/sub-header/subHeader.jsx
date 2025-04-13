@@ -20,6 +20,16 @@ const Subheader = () => {
               <div>Home</div>
             </Link>
           </Nav.Item>
+          
+          <Nav.Item>
+            <Link
+              to="/products"
+              className={`fw-medium text-decoration-none d-flex flex-column align-items-center ${location.pathname === '/products' ? 'text-primary' : 'text-dark'}`}
+            >
+              <FaUserAlt size={18} />
+              <div>Products</div>
+            </Link>
+          </Nav.Item>
 
           <Nav.Item>
             <Link
@@ -38,16 +48,6 @@ const Subheader = () => {
             >
               <FaUserAlt size={18} />
               <div>My</div>
-            </Link>
-          </Nav.Item>
-
-          <Nav.Item>
-            <Link
-              to="/products"
-              className={`fw-medium text-decoration-none d-flex flex-column align-items-center ${location.pathname === '/products' ? 'text-primary' : 'text-dark'}`}
-            >
-              <FaUserAlt size={18} />
-              <div>Products</div>
             </Link>
           </Nav.Item>
 
