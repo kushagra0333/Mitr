@@ -4,7 +4,7 @@ import { Container, Button, Card, Row, Col, ListGroup, Modal, Spinner, Form } fr
 import { FaPlus, FaBluetooth, FaEdit, FaExclamationTriangle, FaUnlink } from "react-icons/fa";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
-const EditDevice = ({ show, onClose, device }) => {
+export const EditDevice = ({ show, onClose, device }) => {
   // Always call useState at the top of your component
   const [name, setName] = useState("");
   const [triggerWords, setTriggerWords] = useState([]);
