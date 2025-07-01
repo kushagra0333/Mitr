@@ -90,6 +90,7 @@
   animation: floatImage 6s ease-in-out infinite;
   box-shadow: 0 0 30px rgba(255, 77, 218, 0.3);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 30px;
 }
 
 .about-img:hover {

@@ -134,3 +134,14 @@
     font-size: 0.95rem;
   }
 }
+@media (max-width: 768px) {
+  .footer-heading {
+    text-align: center;
+  }
+
+  .footer-heading::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
