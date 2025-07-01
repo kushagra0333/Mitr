@@ -18,8 +18,10 @@ const Header = () => {
         <Container fluid className="px-4 d-flex justify-content-between align-items-center">
           {/* Logo */}
           <Navbar.Brand href="#" className="d-flex align-items-center brand-text">
+            <Link to="/" className="text-decoration-none d-flex align-items-center gap-2 text-white">
             <img src={Logo} alt="MITR Logo" className="logo-img" />
             <h4 className="mb-0 fw-bold">MITR</h4>
+            </Link>
           </Navbar.Brand>
 
           {/* Desktop Nav */}
