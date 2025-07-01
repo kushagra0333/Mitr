@@ -1,0 +1,51 @@
+.contact-section {
+  background: linear-gradient(to right, #2d0042, #4a0c6b);
+  color: white;
+}
+
+.contact-subtitle {
+  color: #bb86fc;
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: 0.9rem;
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #bb86fc, #e040fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.contact-form {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+
+.contact-form input,
+.contact-form textarea,
+.contact-form select {
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus,
+.contact-form select:focus {
+  border-color: #bb86fc;
+  box-shadow: 0 0 8px rgba(224, 64, 251, 0.4);
+}
+
+button.btn-primary {
+  background-color: #bb86fc;
+  border-color: #bb86fc;
+  transition: background-color 0.3s ease;
+}
+
+button.btn-primary:hover {
+  background-color: #e040fb;
+  border-color: #e040fb;
+}

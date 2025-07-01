@@ -1,12 +1,13 @@
-.feature-section {
-  background: linear-gradient(to right, #320046, #4a1170);
-  color: white;
+.usecase-section {
+  background: linear-gradient(to right, #2b0042, #3c0a60);
+  color: #fff;
+  padding: 4rem 0;
 }
 
-.section-subtitle {
+.usecase-subtitle {
   color: #bb86fc;
-  font-weight: 600;
   letter-spacing: 1px;
+  font-weight: 600;
   font-size: 0.9rem;
 }
 
@@ -16,33 +17,30 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Feature Card Styling */
-.feature-card {
-  border: none;
+.usecase-card {
   background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 1rem;
-  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(8px);
 }
 
-.feature-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 25px rgba(224, 64, 251, 0.2);
+.usecase-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 20px rgba(224, 64, 251, 0.25);
 }
 
-/* Icons */
-.feature-icon {
+.icon {
   color: #bb86fc;
   transition: color 0.3s ease;
 }
 
-.feature-card:hover .feature-icon {
+.usecase-card:hover .icon {
   color: #e040fb;
 }
 
-/* Responsive Tweak */
 @media (max-width: 576px) {
-  .feature-card {
+  .usecase-card {
     padding: 1.5rem 1rem;
   }
 }

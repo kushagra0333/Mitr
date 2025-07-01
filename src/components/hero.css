@@ -1,0 +1,39 @@
+.hero {
+  height: 100vh;
+  background: linear-gradient(to right, #2c003e, #3a0c5e); /* deep purple background */
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.hero-img {
+  width: 90%;
+  max-width: 1000px;
+  height: auto;
+  max-height: 500px;
+  object-fit: contain;
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(187, 134, 252, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 40px rgba(224, 64, 251, 0.4);
+}
+
+/* Responsive Image Heights */
+@media (max-width: 768px) {
+  .hero-img {
+    max-height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-img {
+    max-height: 220px;
+    border-radius: 12px;
+  }
+}

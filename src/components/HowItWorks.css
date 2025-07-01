@@ -1,35 +1,72 @@
+.howitworks-section {
+  background: linear-gradient(to right, #2c003e, #4a0c6b);
+  color: #fff;
+}
+
+.section-subtitle {
+  color: #bb86fc;
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: 0.9rem;
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #bb86fc, #e040fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .timeline-step {
-    position: relative;
-    padding-bottom: 2rem;
+  position: relative;
+  padding-bottom: 2rem;
+}
+
+.icon-circle {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 2px solid #bb86fc;
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(187, 134, 252, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.icon-circle:hover {
+  transform: scale(1.1);
+}
+
+.step-icon {
+  color: #bb86fc;
+  transition: color 0.3s ease;
+}
+
+.icon-circle:hover .step-icon {
+  color: #e040fb;
+}
+
+.arrow-icon {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0px);
   }
-  
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+@media (max-width: 576px) {
   .icon-circle {
-    background-color: #ffffff;
-    border: 2px solid #007bff;
-    border-radius: 50%;
     width: 60px;
     height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.15);
-    transition: transform 0.3s ease;
   }
-  
-  .icon-circle:hover {
-    transform: scale(1.1);
+
+  .step-icon {
+    font-size: 24px;
   }
-  
-  .arrow-icon {
-    animation: bounce 2s infinite;
-  }
-  
-  @keyframes bounce {
-    0%, 100% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(8px);
-    }
-  }
-  
+}

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
+import "./contact.css";
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -32,7 +33,6 @@ const ContactUs = () => {
     if (Object.keys(validationErrors).length === 0) {
       setSubmitted(true);
       console.log("Form submitted:", formData);
-      // Reset form (optional)
       setFormData({ name: "", email: "", subject: "", message: "" });
     } else {
       setSubmitted(false);
@@ -41,27 +41,28 @@ const ContactUs = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" }); // Clear errors as user types
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
   return (
-    <section className="bg-light py-5">
+    <section className="contact-section py-5">
+      <hr className="border-secondary my-4" />
       <Container>
         <div className="text-center mb-5">
-          <h5 className="text-primary text-uppercase">Get In Touch</h5>
-          <h2 className="fw-bold text-dark">Contact Us</h2>
-          <p className="text-muted">We'd love to hear from you. Whether it's support, bulk inquiries, or just feedback.</p>
+          <h5 className="contact-subtitle text-uppercase">Get In Touch</h5>
+          <h2 className="fw-bold text-white">Contact <span className="text-gradient">Us</span></h2>
+          <p className="text-light">We'd love to hear from you — whether it's support, bulk inquiries, or just feedback.</p>
         </div>
 
         <Row className="justify-content-center">
           <Col md={8}>
-            <Form onSubmit={handleSubmit} className="p-4 rounded bg-white shadow-sm">
-              {submitted && <Alert variant="success">Message sent successfully!</Alert>}
+            <Form onSubmit={handleSubmit} className="contact-form p-4 rounded">
+              {submitted && <Alert variant="success">✅ Message sent successfully!</Alert>}
 
               <Row className="mb-3">
                 <Col md={6}>
                   <Form.Group controlId="formName">
-                    <Form.Label>Name</Form.Label>
+                    <Form.Label className="text-light">Name</Form.Label>
                     <Form.Control
                       type="text"
                       name="name"
@@ -75,7 +76,7 @@ const ContactUs = () => {
                 </Col>
                 <Col md={6}>
                   <Form.Group controlId="formEmail">
-                    <Form.Label>Email</Form.Label>
+                    <Form.Label className="text-light">Email</Form.Label>
                     <Form.Control
                       type="email"
                       name="email"
@@ -90,8 +91,13 @@ const ContactUs = () => {
               </Row>
 
               <Form.Group controlId="formSubject" className="mb-3">
-                <Form.Label>Subject</Form.Label>
-                <Form.Select name="subject" value={formData.subject} onChange={handleChange}>
+                <Form.Label className="text-light">Subject</Form.Label>
+                <Form.Select
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  className="bg-dark text-white border-secondary"
+                >
                   <option value="">Choose...</option>
                   <option>Support</option>
                   <option>Bulk Order</option>
@@ -100,7 +106,7 @@ const ContactUs = () => {
               </Form.Group>
 
               <Form.Group controlId="formMessage" className="mb-4">
-                <Form.Label>Message</Form.Label>
+                <Form.Label className="text-light">Message</Form.Label>
                 <Form.Control
                   as="textarea"
                   name="message"
@@ -114,7 +120,7 @@ const ContactUs = () => {
               </Form.Group>
 
               <div className="text-center">
-                <Button variant="primary" type="submit" className="px-4 py-2 shadow">
+                <Button variant="primary" type="submit" className="px-4 py-2 shadow-sm">
                   Send Message
                 </Button>
               </div>
@@ -122,6 +128,7 @@ const ContactUs = () => {
           </Col>
         </Row>
       </Container>
+      <hr className="border-secondary my-4" />
     </section>
   );
 };

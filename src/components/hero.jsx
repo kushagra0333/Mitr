@@ -1,38 +1,15 @@
 import React from 'react';
-import { Carousel, Container } from 'react-bootstrap';
-import Image1 from '../assets/image.jpg';
+import { Container } from 'react-bootstrap';
+import './hero.css';
+import HeroImage from '../assets/hero.jpg'; // use correct path based on your folder
 
 const Hero = () => {
   return (
-    <Container className="py-4">
-      {/* Removed 'fade' prop for slide effect */}
-      <Carousel controls indicators className="rounded-4 overflow-hidden shadow">
-        <Carousel.Item>
-          <img
-            src={Image1}
-            alt="Slide 1"
-            className="d-block w-100"
-            style={{ height: '400px', objectFit: 'cover' }}
-          />
-        </Carousel.Item>
-        <Carousel.Item>
-          <img
-            src={Image1}
-            alt="Slide 2"
-            className="d-block w-100"
-            style={{ height: '400px', objectFit: 'cover' }}
-          />
-        </Carousel.Item>
-        <Carousel.Item>
-          <img
-            src={Image1}
-            alt="Slide 3"
-            className="d-block w-100"
-            style={{ height: '400px', objectFit: 'cover' }}
-          />
-        </Carousel.Item>
-      </Carousel>
-    </Container>
+    <section className="hero d-flex align-items-center justify-content-center">
+      <Container className="text-center">
+        <img src={HeroImage} className="hero-img img-fluid" alt="MITR Hero" />
+      </Container>
+    </section>
   );
 };
 

@@ -1,0 +1,69 @@
+/* Footer background */
+.custom-footer {
+  background: linear-gradient(to right, #2c003e, #3a0c5e);
+  transition: background 0.3s ease-in-out;
+}
+
+/* Logo image */
+.footer-logo {
+  height: 42px;
+  margin-right: 10px;
+  transition: transform 0.3s ease;
+}
+
+.footer-logo-area:hover .footer-logo {
+  transform: scale(1.05);
+}
+
+/* Description */
+.footer-description {
+  color: #ccc;
+  font-size: 0.95rem;
+  transition: color 0.3s ease;
+}
+
+.footer-description:hover {
+  color: #e0e0e0;
+}
+
+/* Contact Text */
+.footer-contact {
+  color: #d1c4e9;
+  font-size: 0.95rem;
+  transition: color 0.3s ease;
+}
+
+.footer-contact:hover {
+  color: #f3e5f5;
+}
+
+/* Links */
+.footer-links li {
+  margin-bottom: 8px;
+}
+
+.footer-link {
+  color: #bb86fc;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.footer-link::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background-color: #bb86fc;
+  bottom: -2px;
+  left: 0;
+  transition: width 0.3s ease;
+}
+
+.footer-link:hover {
+  color: #e040fb;
+}
+
+.footer-link:hover::after {
+  width: 100%;
+}
