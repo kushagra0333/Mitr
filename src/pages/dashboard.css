@@ -1,194 +1,191 @@
-/* dashboard.css */
+/* === DASHBOARD.CSS === */
+
+/* Fonts & Resets */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  background: #000000;
+  overflow-x: hidden;
+  color: white;
+}
+
 .dashboard-container {
-  padding: 2rem;
-  background: linear-gradient(135deg, #1a0026 0%, #2c003e 100%);
+  padding: 40px 20px;
+  background: linear-gradient(145deg, #050505, #1a1a1a);
   min-height: 100vh;
+  z-index: 1;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .dashboard-card {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(187, 134, 252, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
   border-radius: 16px;
-  backdrop-filter: blur(12px);
-  transition: all 0.3s ease;
-  height: 100%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInUp 0.6s ease forwards;
 }
 
 .dashboard-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(187, 134, 252, 0.6);
-  box-shadow: 0 12px 40px rgba(187, 134, 252, 0.2);
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.15);
 }
 
-.glow-on-hover:hover {
-  box-shadow: 0 0 15px rgba(187, 134, 252, 0.4);
+.card-body h5 {
+  font-size: 18px;
+  color: #ffffff;
 }
 
 .profile-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #bb86fc, #e040fb);
+  width: 60px;
+  height: 60px;
+  background: #ff4081;
   color: white;
+  font-weight: bold;
+  font-size: 28px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  font-weight: bold;
-  margin: 0 auto;
-  box-shadow: 0 0 20px rgba(187, 134, 252, 0.5);
-}
-
-.pulse-animation {
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-.contact-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #bb86fc, #e040fb);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
-.trigger-words-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(255, 64, 129, 0.6);
 }
 
 .trigger-word-badge {
-  background: rgba(187, 134, 252, 0.2);
-  color: #bb86fc;
-  padding: 6px 14px;
+  display: inline-block;
+  background: #007bff;
+  color: #fff;
+  padding: 5px 10px;
+  margin: 4px;
   border-radius: 20px;
-  font-size: 0.9rem;
-  border: 1px solid #bb86fc;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  font-size: 12px;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
 .trigger-word-badge:hover {
-  background: rgba(187, 134, 252, 0.3);
-  transform: translateY(-2px);
+  background: #0056b3;
+  transform: scale(1.1);
 }
 
+/* Map styling */
 .map-container {
-  border-radius: 8px;
+  height: 200px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 0;
 }
 
-/* Settings Modal Styles */
-.settings-modal .modal-content {
-  background: linear-gradient(135deg, #1a0026 0%, #2c003e 100%);
-  border: 1px solid #bb86fc;
-}
-
+/* Settings Modal */
 .settings-sidebar {
-  width: 200px;
-  padding: 1rem 0;
-  border-right: 1px solid rgba(187, 134, 252, 0.2);
+  min-width: 220px;
+  background: #111;
+  border-right: 1px solid #222;
+  padding: 20px 0;
+}
+
+.settings-tab {
+  display: block;
+  width: 100%;
+  padding: 12px 20px;
+  background: transparent;
+  color: #ccc;
+  text-align: left;
+  border: none;
+  outline: none;
+  transition: background 0.3s, color 0.3s;
+  font-weight: 500;
+}
+
+.settings-tab:hover,
+.settings-tab.active {
+  background: #222;
+  color: #fff;
 }
 
 .settings-content {
   flex: 1;
-  background: rgba(30, 0, 46, 0.7);
+  background: #181818;
+  color: #fff;
+  min-height: 300px;
 }
 
-.settings-tab {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: transparent;
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, #007bff, #00c6ff);
   border: none;
-  color: #e0e0e0;
-  text-align: left;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  border-left: 3px solid transparent;
 }
 
-.settings-tab:hover {
-  background: rgba(187, 134, 252, 0.1);
-  color: #bb86fc;
+.btn-outline-primary {
+  border: 1px solid #00c6ff;
+  color: #00c6ff;
 }
 
-.settings-tab.active {
-  background: rgba(187, 134, 252, 0.2);
-  color: #bb86fc;
-  border-left: 3px solid #bb86fc;
+.btn-outline-primary:hover {
+  background: #00c6ff;
+  color: #000;
 }
 
-/* Form styles */
+/* Form & Inputs */
 .form-control {
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid #bb86fc;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
-  transition: all 0.3s ease;
 }
 
 .form-control:focus {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: #e040fb;
-  color: white;
-  box-shadow: 0 0 0 0.25rem rgba(187, 134, 252, 0.25);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: #00c6ff;
+  box-shadow: none;
 }
 
-.form-label {
-  color: #bb86fc;
-  font-weight: 500;
-}
-
-/* Active trigger item */
-.active-trigger {
-  background: rgba(187, 134, 252, 0.1) !important;
-  border-left: 3px solid #bb86fc !important;
-}
-
-/* Responsive adjustments */
-@media (max-width: 1200px) {
-  .dashboard-card {
-    backdrop-filter: blur(8px);
-  }
-}
-
+/* Responsive */
 @media (max-width: 768px) {
-  .dashboard-container {
-    padding: 1rem;
-  }
-  
   .settings-sidebar {
-    width: 160px;
+    display: none;
+  }
+  .settings-content {
+    width: 100%;
+    padding: 20px;
   }
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
+/* Footer & Navbar integration */
+footer, .navbar {
+  background: #0d0d0d !important;
+  border-top: 1px solid #222;
+  border-bottom: 1px solid #222;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.05);
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+.navbar .nav-link,
+.navbar-brand {
+  color: #00c6ff !important;
+  transition: color 0.3s;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #bb86fc;
-  border-radius: 4px;
+.navbar .nav-link:hover,
+.navbar-brand:hover {
+  color: #ffffff !important;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #9c4fe8;
+footer p {
+  margin: 0;
+  color: #888;
+  text-align: center;
+  padding: 16px;
 }
+
+/* Ripple cursor - optional additional script required for effect */
