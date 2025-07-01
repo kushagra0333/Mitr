@@ -30,7 +30,7 @@ const Login = () => {
           </Form>
           <Container className="text-center d-flex justify-content-center align-items-center mt-3">
   <div>
-    Already have an account?{' '}
+    if you don't have an account?{' '}
     <Link to="/signup" className="text-decoration-none text-primary fw-semibold">
       signup
     </Link>
