@@ -11,7 +11,7 @@ const Header = () => {
   if (NoHeaderPath().includes(location.pathname)) return null;
 
   return (
-    <>
+    <div className='nav-main'>
       <header className="butter-navbar">
         <div className="navbar-container">
           <Link to="/" className="logo-area">
@@ -45,7 +45,7 @@ const Header = () => {
       </div>
 
       {menuOpen && <div className="overlay" onClick={() => setMenuOpen(false)} />}
-    </>
+    </div>
   );
 };
 

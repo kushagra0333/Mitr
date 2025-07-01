@@ -109,7 +109,7 @@ const ContactUs = () => {
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  className="text-white border-secondary"
+                  className="text-white select border-secondary"
                 >
                   <option value="">Choose...</option>
                   <option>Support</option>
