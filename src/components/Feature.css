@@ -1,6 +1,19 @@
 .feature-section {
-  background: linear-gradient(to right, #320046, #4a1170);
+  background: radial-gradient(ellipse at top left, #23002e, #0e0e10);
   color: white;
+  padding: 80px 10%;
+}
+
+.feature-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header */
+.feature-header {
+  text-align: center;
+  margin-bottom: 60px;
+  animation: fadeInUp 0.5s ease-out;
 }
 
 .section-subtitle {
@@ -8,6 +21,15 @@
   font-weight: 600;
   letter-spacing: 1px;
   font-size: 0.9rem;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 12px;
 }
 
 .text-gradient {
@@ -16,33 +38,82 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Feature Card Styling */
+.section-desc {
+  color: #ccc;
+  font-size: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Grid Layout */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+}
+
+/* Feature Card */
 .feature-card {
-  border: none;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 1rem;
-  backdrop-filter: blur(8px);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 30px 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(12px);
+  animation: fadeInUp 0.6s ease both;
 }
 
 .feature-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 25px rgba(224, 64, 251, 0.2);
+  transform: translateY(-6px);
+  box-shadow: 0 0 20px rgba(224, 64, 251, 0.2);
 }
 
-/* Icons */
-.feature-icon {
+/* Icon Styles */
+.icon-wrapper {
+  font-size: 2.2rem;
   color: #bb86fc;
+  margin-bottom: 16px;
   transition: color 0.3s ease;
 }
 
-.feature-card:hover .feature-icon {
+.feature-card:hover .icon-wrapper {
   color: #e040fb;
 }
 
-/* Responsive Tweak */
-@media (max-width: 576px) {
+/* Title and Text */
+.feature-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.feature-text {
+  font-size: 0.95rem;
+  color: #d2d2d2;
+  line-height: 1.6;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 2rem;
+  }
+
   .feature-card {
-    padding: 1.5rem 1rem;
+    padding: 24px 16px;
   }
 }

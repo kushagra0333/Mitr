@@ -1,39 +1,86 @@
-.hero {
-  height: 100vh;
-  background: linear-gradient(to right, #2c003e, #3a0c5e); /* deep purple background */
-  padding: 2rem 1rem;
+.hero-section {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  padding: 60px 8%;
+  background-color: #0e0e10;
+  color: white;
+  position: relative;
   overflow: hidden;
 }
 
-.hero-img {
-  width: 90%;
-  max-width: 1000px;
-  height: auto;
-  max-height: 500px;
-  object-fit: contain;
-  border-radius: 20px;
-  box-shadow: 0 0 30px rgba(187, 134, 252, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.hero-content {
+  max-width: 45%;
+  z-index: 2;
 }
 
-.hero-img:hover {
-  transform: scale(1.02);
-  box-shadow: 0 0 40px rgba(224, 64, 251, 0.4);
+.hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #ff4dda;
+  text-shadow: 0 0 10px #ff4dda, 0 0 30px rgba(255, 77, 218, 0.6);
+  margin-bottom: 16px;
 }
 
-/* Responsive Image Heights */
+.hero-desc {
+  font-size: 1.1rem;
+  color: #e2e2e2;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.hero-quote {
+  font-size: 0.95rem;
+  color: #b6b6b6;
+  font-style: italic;
+  border-left: 3px solid #ff4dda;
+  padding-left: 12px;
+  margin-top: 10px;
+}
+
+/* Image Styling */
+.hero-image-container {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1000px;
+}
+
+.hero-image {
+  width: 70%; /* ⬅ reduced from 90% */
+  max-width: 360px; /* ⬅ reduced max width */
+  transition: transform 0.2s ease-out;
+  filter: drop-shadow(0 0 12px #ff4dda);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .hero-img {
-    max-height: 300px;
+  .hero-section {
+    flex-direction: column;
+    padding: 40px 5%;
   }
-}
 
-@media (max-width: 480px) {
-  .hero-img {
-    max-height: 220px;
-    border-radius: 12px;
+  .hero-content {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .hero-image-container {
+    width: 100%;
+    margin-top: 30px;
+  }
+
+  .hero-title {
+    font-size: 2.3rem;
+  }
+
+  .hero-desc {
+    font-size: 1rem;
+  }
+
+  .hero-image {
+    width: 60%;
+    max-width: 280px;
   }
 }

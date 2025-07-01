@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
-import "./contact.css";
+import "./contact.css"; // Make sure to include the updated CSS provided earlier
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -50,14 +50,23 @@ const ContactUs = () => {
       <Container>
         <div className="text-center mb-5">
           <h5 className="contact-subtitle text-uppercase">Get In Touch</h5>
-          <h2 className="fw-bold text-white">Contact <span className="text-gradient">Us</span></h2>
-          <p className="text-light">We'd love to hear from you — whether it's support, bulk inquiries, or just feedback.</p>
+          <h2 className="fw-bold text-white">
+            Contact <span className="text-gradient">Us</span>
+          </h2>
+          <p className="text-light">
+            We'd love to hear from you — whether it's support, bulk inquiries,
+            or just feedback.
+          </p>
         </div>
 
         <Row className="justify-content-center">
           <Col md={8}>
             <Form onSubmit={handleSubmit} className="contact-form p-4 rounded">
-              {submitted && <Alert variant="success">✅ Message sent successfully!</Alert>}
+              {submitted && (
+                <Alert variant="success">
+                  ✅ Message sent successfully!
+                </Alert>
+              )}
 
               <Row className="mb-3">
                 <Col md={6}>
@@ -71,7 +80,9 @@ const ContactUs = () => {
                       onChange={handleChange}
                       isInvalid={!!errors.name}
                     />
-                    <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">
+                      {errors.name}
+                    </Form.Control.Feedback>
                   </Form.Group>
                 </Col>
                 <Col md={6}>
@@ -85,7 +96,9 @@ const ContactUs = () => {
                       onChange={handleChange}
                       isInvalid={!!errors.email}
                     />
-                    <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">
+                      {errors.email}
+                    </Form.Control.Feedback>
                   </Form.Group>
                 </Col>
               </Row>
@@ -116,11 +129,17 @@ const ContactUs = () => {
                   onChange={handleChange}
                   isInvalid={!!errors.message}
                 />
-                <Form.Control.Feedback type="invalid">{errors.message}</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">
+                  {errors.message}
+                </Form.Control.Feedback>
               </Form.Group>
 
               <div className="text-center">
-                <Button variant="primary" type="submit" className="px-4 py-2 shadow-sm">
+                <Button
+                  variant="primary"
+                  type="submit"
+                  className="px-4 py-2 shadow-sm"
+                >
                   Send Message
                 </Button>
               </div>

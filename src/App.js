@@ -9,11 +9,15 @@ import Login from "./pages/login";
 import Signup from "./pages/signup";
 import Dashboard from "./pages/dashboard";
 import 'leaflet/dist/leaflet.css';
+import CustomCursor from "./components/CustomCursor";
+
 
 function App() {
+  
   return (
     <Router basename="/">
-      <Header />
+      <CustomCursor />
+     <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/dashboard" element={<Dashboard />}/>

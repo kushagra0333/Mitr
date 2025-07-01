@@ -1,5 +1,4 @@
-import React from "react";
-import { Container, Row, Col, Card } from "react-bootstrap";
+import React from 'react';
 import {
   FaChild,
   FaFemale,
@@ -7,43 +6,43 @@ import {
   FaWalking,
   FaMapMarkedAlt,
   FaHeadset,
-} from "react-icons/fa";
-import "./usecase.css";
+} from 'react-icons/fa';
+import './usecase.css';
 
 const useCases = [
   {
     title: "For Children",
-    icon: <FaChild size={40} className="icon mb-3" />,
+    icon: <FaChild className="icon" />,
     description:
       "Ensure your child’s safety on their way to school or in outdoor activities — even when they don’t carry a phone.",
   },
   {
     title: "For Women",
-    icon: <FaFemale size={40} className="icon mb-3" />,
+    icon: <FaFemale className="icon" />,
     description:
       "Protect yourself during commutes, while jogging, or in uncomfortable public encounters with a discreet safety solution.",
   },
   {
     title: "For Senior Citizens",
-    icon: <FaUserShield size={40} className="icon mb-3" />,
+    icon: <FaUserShield className="icon" />,
     description:
       "Give elderly family members a secure way to call for help during medical emergencies or unsafe conditions at home or outside.",
   },
   {
     title: "For Travelers & Solo Workers",
-    icon: <FaWalking size={40} className="icon mb-3" />,
+    icon: <FaWalking className="icon" />,
     description:
       "Stay safe in unfamiliar places. Ideal for field agents, delivery staff, cab drivers, or anyone traveling alone.",
   },
   {
     title: "When Phones Can’t Be Used",
-    icon: <FaMapMarkedAlt size={40} className="icon mb-3" />,
+    icon: <FaMapMarkedAlt className="icon" />,
     description:
       "Mitr activates through voice alone — perfect in situations where phones are out of reach, confiscated, or too risky to use.",
   },
   {
     title: "24/7 Emergency Response",
-    icon: <FaHeadset size={40} className="icon mb-3" />,
+    icon: <FaHeadset className="icon" />,
     description:
       "Works round the clock, silently listening for trigger words and sending alerts even if you're physically restrained or unconscious.",
   },
@@ -51,32 +50,28 @@ const useCases = [
 
 const UseCase = () => {
   return (
-    <section className="usecase-section py-5">
-      <hr className="border-secondary my-4" />
-      <Container>
-        <div className="text-center mb-5">
-          <h5 className="usecase-subtitle text-uppercase">Real-Life Scenarios</h5>
-          <h2 className="fw-bold text-white">
+    <section className="usecase-section">
+      <div className="usecase-container">
+        <div className="usecase-header">
+          <h5 className="usecase-subtitle">Real-Life Scenarios</h5>
+          <h2 className="usecase-title">
             Who Needs <span className="text-gradient">MITR</span>?
           </h2>
-          <p className="text-muted">
-            From kids to commuters, Mitr is your invisible ally in emergencies.
+          <p className="usecase-desc">
+            From kids to commuters, MITR is your invisible ally in emergencies.
           </p>
         </div>
 
-        <Row>
-          {useCases.map((caseItem, index) => (
-            <Col md={6} lg={4} className="mb-4" key={index}>
-              <Card className="usecase-card h-100 text-center p-3">
-                <div>{caseItem.icon}</div>
-                <h5 className="fw-bold mt-3 text-white">{caseItem.title}</h5>
-                <p className="text-light">{caseItem.description}</p>
-              </Card>
-            </Col>
+        <div className="usecase-grid">
+          {useCases.map((item, index) => (
+            <div className="usecase-card" key={index}>
+              <div className="icon-wrapper">{item.icon}</div>
+              <h4 className="usecase-heading">{item.title}</h4>
+              <p className="usecase-text">{item.description}</p>
+            </div>
           ))}
-        </Row>
-      </Container>
-      <hr className="border-secondary my-4" />
+        </div>
+      </div>
     </section>
   );
 };

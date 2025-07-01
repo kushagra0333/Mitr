@@ -1,5 +1,4 @@
 import React from "react";
-import { Container, Row, Col } from "react-bootstrap";
 import {
   FaShoppingCart,
   FaUserShield,
@@ -12,73 +11,65 @@ import "./HowItWorks.css";
 
 const steps = [
   {
-    icon: <FaShoppingCart size={28} className="step-icon" />,
+    icon: <FaShoppingCart className="step-icon" />,
     title: "Purchase & Setup",
     description:
-      "Buy the MITR device from our website. Receive it with a QR code, install the app or visit the website, and register with Gmail. Link your device using the QR code.",
+      "Buy the MITR device from our website. Use the QR code to connect via the app or website, and register with Gmail.",
   },
   {
-    icon: <FaUserShield size={28} className="step-icon" />,
+    icon: <FaUserShield className="step-icon" />,
     title: "Add Emergency Contacts",
     description:
-      "Add trusted contacts via app or website. Set up personalized trigger words or phrases for the SOS feature.",
+      "Add trusted contacts. Set custom trigger words or phrases for the SOS feature through the app or website.",
   },
   {
-    icon: <FaRunning size={28} className="step-icon" />,
+    icon: <FaRunning className="step-icon" />,
     title: "Daily Usage",
     description:
-      "Carry your compact, keychain-sized MITR device. It runs silently without depending on your phone. Charges wirelessly.",
+      "Carry your keychain-sized MITR device. Runs silently, phone-free, and charges wirelessly.",
   },
   {
-    icon: <FaBullhorn size={28} className="step-icon" />,
+    icon: <FaBullhorn className="step-icon" />,
     title: "In Case of Emergency",
     description:
-      "Speak your custom trigger word. Device sends SMS, WhatsApp, and real-time location to emergency contacts — updating as you move.",
+      "Say your trigger word. Instantly sends SMS, WhatsApp & live location to your emergency contacts.",
   },
   {
-    icon: <FaLock size={28} className="step-icon" />,
+    icon: <FaLock className="step-icon" />,
     title: "Post-Emergency Security",
     description:
-      "Only the registered user can reset or disable tracking via password-protected access in the app or website.",
+      "Only the owner can reset or disable tracking with password-protected access.",
   },
 ];
 
 const HowItWorks = () => {
   return (
-    <div className="howitworks-section py-5">
-      <hr className="border-secondary my-4" />
-      <Container>
-        <div className="text-center mb-5">
-          <h5 className="section-subtitle text-uppercase">How It Works</h5>
-          <h2 className="fw-bold text-white">MITR SOS User Journey</h2>
-          <p className="text-light">Understand each step from purchase to emergency usage with your MITR device.</p>
+    <section className="howitworks-section">
+      <div className="howitworks-container">
+        <div className="howitworks-header">
+          <h5 className="section-subtitle">How It Works</h5>
+          <h2 className="section-title">MITR SOS User Journey</h2>
+          <p className="section-desc">
+            Understand each step from purchase to real-world usage.
+          </p>
         </div>
 
-        <Row className="justify-content-center">
-          <Col md={10}>
-            <div className="timeline">
-              {steps.map((step, index) => (
-                <div className="timeline-step text-center mb-5" key={index}>
-                  <div className="icon-circle mb-3 mx-auto">{step.icon}</div>
-                  <h5 className="text-white fw-semibold">
-                    {index + 1}. {step.title}
-                  </h5>
-                  <p className="text-light mx-auto" style={{ maxWidth: "600px" }}>
-                    {step.description}
-                  </p>
-                  {index !== steps.length - 1 && (
-                    <div className="arrow-icon text-gradient mt-4 mb-2">
-                      <FaArrowDown size={20} />
-                    </div>
-                  )}
+        <div className="timeline">
+          {steps.map((step, index) => (
+            <div className="timeline-step" key={index}>
+              <div className="icon-circle">{step.icon}</div>
+              <h4 className="step-title">{index + 1}. {step.title}</h4>
+              <p className="step-desc">{step.description}</p>
+              {index !== steps.length - 1 && (
+                <div className="arrow-icon">
+                  <FaArrowDown />
                 </div>
-              ))}
+              )}
             </div>
-          </Col>
-        </Row>
-      </Container>
-      <hr className="border-secondary my-4" />
-    </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 };
 
