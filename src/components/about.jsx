@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Row, Col, Container } from "react-bootstrap";
 import { FaArrowAltCircleRight } from "react-icons/fa";
-import sampleImage from "../assets/product 4.avif";
+import sampleImage from "../assets/product_4.png";
 import './about.css';
 
 const About = () => {
@@ -36,7 +36,7 @@ const About = () => {
             <img
               src={sampleImage}
               alt="MITR SOS Device"
-              className="about-img img-fluid"
+              className="about-img img-fluid p-3"
             />
           </Col>
         </Row>
