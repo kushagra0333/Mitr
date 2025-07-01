@@ -1,15 +1,14 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from 'react-router-dom';
 import logo from "../../assets/logo-2.png"; // replace with your logo path
-import NoFooterPaths from "./NoFooterPath";
+import NoFooterPath from "./NoFooterPath";
 import "./footer.css";
 
 const Footer = () => {
-  if (NoFooterPaths().includes(window.location.pathname)) {
-    return null; // Do not render the footer for these paths
-  }
+  const location = useLocation();
+  if (NoFooterPath().includes(location.pathname)) return null;
 
   return (
     <footer className="custom-footer text-light pt-5 pb-3 pt-5">
