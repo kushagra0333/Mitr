@@ -1,7 +1,8 @@
 .footer-hero {
   background-color: #000000;
   padding: 5rem 0 3rem;
-  background-image: radial-gradient(circle at top left, #2c003e 10%, transparent 20%), radial-gradient(circle at bottom right, #4a0c6b 10%, transparent 20%);
+  background-image: radial-gradient(circle at top left, #2c003e 10%, transparent 20%), 
+                    radial-gradient(circle at bottom right, #4a0c6b 10%, transparent 20%);
   background-repeat: no-repeat;
   background-size: cover;
   overflow: hidden;
@@ -9,6 +10,45 @@
   position: relative;
   z-index: 1;
   animation: fadeInUp 0.8s ease-in-out;
+}
+
+/* Animated Pink Circles */
+.footer-hero::before,
+.footer-hero::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,105,180,0.4) 0%, transparent 70%);
+  animation: float 10s infinite ease-in-out;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.footer-hero::before {
+  width: 200px;
+  height: 200px;
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.footer-hero::after {
+  width: 150px;
+  height: 150px;
+  bottom: 15%;
+  right: 15%;
+  animation-delay: 2s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-10px) scale(1.1);
+    opacity: 1;
+  }
 }
 
 .footer-hero-logo {
@@ -54,6 +94,19 @@
   position: absolute;
   left: 0;
   bottom: -6px;
+}
+
+/* Contact Section Fix */
+.footer-contact-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.footer-contact-content p {
+  margin: 0.4rem 0;
+  color: #ccc;
 }
 
 .footer-links li {
@@ -133,8 +186,7 @@
   .footer-brand-tagline {
     font-size: 0.95rem;
   }
-}
-@media (max-width: 768px) {
+
   .footer-heading {
     text-align: center;
   }
@@ -143,5 +195,35 @@
     left: 50%;
     transform: translateX(-50%);
   }
+
+  .footer-contact-wrapper {
+    align-items: center;
+    text-align: center;
+  }
+}
+.footer-contact-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #ccc;
+  font-size: 1rem;
 }
 
+.footer-icon {
+  flex-shrink: 0;
+  color: #e040fb;
+  font-size: 1rem;
+  margin-right: 0.5rem;
+}
+
+/* Make responsive */
+@media (max-width: 768px) {
+  .footer-contact-item {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .footer-heading {
+    text-align: center;
+  }
+}

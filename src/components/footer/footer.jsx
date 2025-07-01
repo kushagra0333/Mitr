@@ -26,12 +26,23 @@ const Footer = () => {
           </Col>
 
           {/* Contact */}
-          <Col md={4} className="text-center text-md-start">
-            <h5 className="footer-heading">Contact</h5>
-            <p><FaEnvelope className="me-2" /> support@mitr.com</p>
-            <p><FaPhone className="me-2" /> +91 98765 43210</p>
-            <p><FaMapMarkerAlt className="me-2" /> Pune, Maharashtra, India</p>
-          </Col>
+          {/* Contact */}
+<Col md={4} className="footer-contact text-center text-md-start">
+  <h5 className="footer-heading">Contact</h5>
+  <div className="footer-contact-item">
+    <FaEnvelope className="me-2 footer-icon" />
+    <span>support@mitr.com</span>
+  </div>
+  <div className="footer-contact-item">
+    <FaPhone className="me-2 footer-icon" />
+    <span>+91 98765 43210</span>
+  </div>
+  <div className="footer-contact-item">
+    <FaMapMarkerAlt className="me-2 footer-icon" />
+    <span>Pune, Maharashtra, India</span>
+  </div>
+</Col>
+
 
           {/* Links */}
           <Col md={4} className="text-center text-md-start">

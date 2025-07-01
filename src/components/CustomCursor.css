@@ -62,21 +62,3 @@
     transform: translate(-50%, -50%) scale(2);
   }
 }
-.dashboard-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 20px;
-  color: #fff;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  flex: 1;                /* Make it expand to fill */
-  display: flex;
-  flex-direction: column;
-  height: 100%;           /* Match parent column height */
-}
-
-.dashboard-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 0 18px #00f7ff88;
-}
