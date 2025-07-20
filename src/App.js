@@ -10,19 +10,19 @@ import Signup from "./pages/signup";
 import Dashboard from "./pages/dashboard";
 import 'leaflet/dist/leaflet.css';
 import CustomCursor from "./components/CustomCursor";
-
+import {Navigate} from "react-router-dom"
 
 function App() {
-  
+  const isAuthenticated = !!localStorage.getItem('mitr-token');
   return (
     <Router basename="/">
       <CustomCursor />
      <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />}/>
-        <Route path="/login" element={<Login />}/>
-        <Route path="/signup" element={<Signup />}/>
+          <Route path="/" element={<Home />} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} />
+        <Route path="/signup" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Signup />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
       <Footer />
     </Router>

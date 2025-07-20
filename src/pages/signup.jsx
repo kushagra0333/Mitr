@@ -1,10 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Form, Button, Container, Card, Row, Col } from 'react-bootstrap';
 import Logo from '../assets/logo-2.png';
 import './auth.css';
 import { Link } from 'react-router-dom';
 
 const Signup = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSignup = (e) => {
+    e.preventDefault();
+    
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    
+    const newUser = {
+      ...formData,
+      deviceId: `MITR-${Math.floor(Math.random() * 10000)}`
+    };
+    
+    localStorage.setItem('mitr-token', 'mock-token');
+    localStorage.setItem('mitr-user', JSON.stringify(newUser));
+    navigate('/dashboard');
+  };
+
   return (
     <div className="auth-background">
       <div className="auth-overlay-glow" />
@@ -15,46 +51,73 @@ const Signup = () => {
               <img src={Logo} alt="MITR Logo" className="auth-logo glow-pulse" />
               <h4 className="text-white mt-3">Create Your <span className="text-gradient">MITR</span> Account</h4>
             </div>
-            <Form>
+            
+            {error && <div className="error-message">{error}</div>}
+            
+            <Form onSubmit={handleSignup}>
               <Row>
                 <Col md={6}>
-                  <Form.Group className="mb-3" controlId="signupUsername">
-                    <Form.Label>Username</Form.Label>
-                    <Form.Control type="text" placeholder="Enter username" />
+                  <Form.Group className="mb-3" controlId="signupName">
+                    <Form.Label>Full Name</Form.Label>
+                    <Form.Control 
+                      type="text" 
+                      name="name"
+                      placeholder="Enter full name" 
+                      value={formData.name}
+                      onChange={handleChange}
+                    />
                   </Form.Group>
                 </Col>
 
                 <Col md={6}>
                   <Form.Group className="mb-3" controlId="signupPhone">
                     <Form.Label>Phone Number</Form.Label>
-                    <Form.Control type="tel" placeholder="Enter phone number" />
+                    <Form.Control 
+                      type="tel" 
+                      name="phone"
+                      placeholder="Enter phone number" 
+                      value={formData.phone}
+                      onChange={handleChange}
+                    />
                   </Form.Group>
                 </Col>
               </Row>
 
               <Form.Group className="mb-3" controlId="signupEmail">
                 <Form.Label>Email address</Form.Label>
-                <Form.Control type="email" placeholder="Enter email" />
-              </Form.Group>
-
-              <Form.Group className="mb-3" controlId="signupOtp">
-                <Form.Label>Email OTP</Form.Label>
-                <Form.Control type="text" placeholder="Enter OTP" />
-                <Button variant="link" className="p-0 text-primary text-decoration-none">Send OTP</Button>
+                <Form.Control 
+                  type="email" 
+                  name="email"
+                  placeholder="Enter email" 
+                  value={formData.email}
+                  onChange={handleChange}
+                />
               </Form.Group>
 
               <Row>
                 <Col md={6}>
                   <Form.Group className="mb-3" controlId="signupPassword">
                     <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" />
+                    <Form.Control 
+                      type="password" 
+                      name="password"
+                      placeholder="Password" 
+                      value={formData.password}
+                      onChange={handleChange}
+                    />
                   </Form.Group>
                 </Col>
 
                 <Col md={6}>
                   <Form.Group className="mb-4" controlId="signupConfirmPassword">
                     <Form.Label>Confirm Password</Form.Label>
-                    <Form.Control type="password" placeholder="Confirm Password" />
+                    <Form.Control 
+                      type="password" 
+                      name="confirmPassword"
+                      placeholder="Confirm Password" 
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                    />
                   </Form.Group>
                 </Col>
               </Row>
