@@ -29,8 +29,8 @@ const Dashboard = () => {
     status: 'Inactive'
   });
   const [emergencyContacts] = useState([
-    { name: 'Emergency Contact 1', phone: '+1 (555) 123-4567', relationship: 'Family' },
-    { name: 'Emergency Contact 2', phone: '+1 (555) 987-6543', relationship: 'Friend' }
+    { name: 'Emergency Contact 1', phone: '+91 (9311953757)', relationship: 'Family' },
+    { name: 'Emergency Contact 2', phone: '+91 (9310082225)', relationship: 'Friend' }
   ]);
   const [triggerWords] = useState(['Help me', 'Emergency', 'SOS']);
 
