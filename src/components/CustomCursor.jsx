@@ -4,7 +4,6 @@ import './CustomCursor.css';
 const CustomCursor = () => {
   const [showCursor, setShowCursor] = useState(false);
   const cursorRef = useRef(null);
-  const trailRef = useRef(null);
 
   useEffect(() => {
     const isTouchDevice = () =>
@@ -19,18 +18,12 @@ const CustomCursor = () => {
     if (!showCursor) return;
 
     const cursor = cursorRef.current;
-    const trail = trailRef.current;
-
-    if (!cursor || !trail) return;
+    if (!cursor ) return;
 
     const move = (e) => {
       cursor.style.left = e.clientX + "px";
       cursor.style.top = e.clientY + "px";
 
-      trail.style.left = e.clientX + "px";
-      trail.style.top = e.clientY + "px";
-      trail.classList.add("animate");
-      setTimeout(() => trail.classList.remove("animate"), 300);
     };
 
     document.addEventListener("mousemove", move);
@@ -42,7 +35,6 @@ const CustomCursor = () => {
   return (
     <>
       <div className="custom-cursor" ref={cursorRef}></div>
-      <div className="cursor-trail" ref={trailRef}></div>
     </>
   );
 };

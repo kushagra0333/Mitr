@@ -55,7 +55,11 @@
 .usecase-card {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  border-top-left-radius: 0px;
+border-top-right-radius: 70px;
+border-bottom-left-radius: 70px;
+border-bottom-right-radius: 0px;
+
   padding: 24px;
   backdrop-filter: blur(12px);
   box-shadow: 0 0 0 transparent;

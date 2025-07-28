@@ -56,7 +56,10 @@
 .feature-card {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+    border-top-left-radius: 70px;
+
+border-bottom-right-radius: 70px;
+
   padding: 30px 20px;
   text-align: center;
   transition: all 0.3s ease;
