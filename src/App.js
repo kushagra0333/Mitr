@@ -1,32 +1,35 @@
-import "./App.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import Header from "./components/header/Header";
-import Home from "./pages/home";
-import Footer from "./components/footer/footer"
-import Login from "./pages/login";
-import Signup from "./pages/signup";
-import Dashboard from "./pages/dashboard";
-import 'leaflet/dist/leaflet.css';
-import CustomCursor from "./components/CustomCursor";
-import {Navigate} from "react-router-dom"
-
-function App() {
-  const isAuthenticated = !!localStorage.getItem('mitr-token');
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './components/header/Header';
+import Home from './pages/home';
+import Login from './pages/login';
+import Signup from './pages/signup';
+import Dashboard from './pages/Dashboard';
+import DeviceDetails from './pages/DeviceDetails';
+import MapPage from './pages/MapPage';
+import TriggerHistory from './pages/TriggerHistory';
+import Settings from './pages/Settings';
+import './index.css';
+import CustomCursor from './components/CustomCursor';
+import ForgotPassword from './pages/ForgotPassword';
+const App = () => {
   return (
-    <Router basename="/">
+    <Router>
       <CustomCursor />
-     <Header />
+      <Header />
       <Routes>
-          <Route path="/" element={<Home />} />
-        <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} />
-        <Route path="/signup" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Signup />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/device/:deviceId" element={<DeviceDetails />} />
+        <Route path="/map/:sessionId" element={<MapPage />} />
+        <Route path="/history" element={<TriggerHistory />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
-      <Footer />
     </Router>
   );
-}
+};
 
 export default App;

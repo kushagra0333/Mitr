@@ -1,4 +1,4 @@
-.dashboard-background {
+.history-background {
   background-color: #000;
   position: relative;
   overflow: hidden;
@@ -6,7 +6,7 @@
   padding-top: 80px;
 }
 
-.dashboard-overlay-glow {
+.history-overlay-glow {
   position: absolute;
   top: -20%;
   left: -20%;
@@ -18,7 +18,7 @@
   pointer-events: none;
 }
 
-.dashboard-container {
+.history-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
@@ -26,29 +26,19 @@
   z-index: 2;
 }
 
-.user-info-card {
+.history-card {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(187, 134, 252, 0.2);
   border-radius: 16px;
   padding: 2rem;
-  margin-bottom: 2rem;
 }
 
-.device-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(187, 134, 252, 0.2);
-  border-radius: 16px;
-  transition: all 0.3s ease;
+.table {
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.device-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 0 18px rgba(224, 64, 251, 0.3);
-}
-
-.device-section h3 {
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
+.table th, .table td {
+  color: white;
 }
 
 @keyframes pulseGlow {

@@ -118,7 +118,15 @@
   box-shadow: 0 0 0 0.2rem rgba(187, 134, 252, 0.25);
 }
 
-/* Animations */
+.error-message {
+  color: #ff4dda;
+  background: rgba(255, 77, 218, 0.1);
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
 @keyframes glowLogo {
   0% {
     filter: drop-shadow(0 0 5px #bb86fc);

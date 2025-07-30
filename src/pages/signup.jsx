@@ -1,44 +1,64 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// Signup.js
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { Form, Button, Container, Card, Row, Col } from 'react-bootstrap';
 import Logo from '../assets/logo-2.png';
+import { signupInitiate, signupComplete } from '../services/api';
 import './auth.css';
-import { Link } from 'react-router-dom';
 
-const Signup = () => {
+function Signup() {
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
+    userID: '',
     email: '',
-    phone: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    otp: '',
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSignup = (e) => {
+  const handleInitiate = async (e) => {
     e.preventDefault();
-    
+    try {
+      await signupInitiate({
+        name: formData.name,
+        userID: formData.userID,
+        email: formData.email,
+      });
+      setStep(2);
+      setError('');
+    } catch (err) {
+      setError(err.message || 'Failed to send OTP');
+    }
+  };
+
+  const handleComplete = async (e) => {
+    e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-    
-    const newUser = {
-      ...formData,
-      deviceId: `MITR-${Math.floor(Math.random() * 10000)}`
-    };
-    
-    localStorage.setItem('mitr-token', 'mock-token');
-    localStorage.setItem('mitr-user', JSON.stringify(newUser));
-    navigate('/dashboard');
+    try {
+      const response = await signupComplete({
+        name: formData.name, // Add name here
+        userID: formData.userID,
+        email: formData.email,
+        otp: formData.otp,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      });
+      localStorage.setItem('mitr-token', response.data.token);
+      localStorage.setItem('mitr-user', JSON.stringify(response.data.user));
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.message || 'Invalid OTP');
+    }
   };
 
   return (
@@ -49,87 +69,107 @@ const Signup = () => {
           <Card.Body>
             <div className="text-center mb-4">
               <img src={Logo} alt="MITR Logo" className="auth-logo glow-pulse" />
-              <h4 className="text-white mt-3">Create Your <span className="text-gradient">MITR</span> Account</h4>
+              <h4 className="text-white mt-3">
+                Create Your <span className="text-gradient">MITR</span> Account
+              </h4>
             </div>
-            
             {error && <div className="error-message">{error}</div>}
-            
-            <Form onSubmit={handleSignup}>
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3" controlId="signupName">
-                    <Form.Label>Full Name</Form.Label>
-                    <Form.Control 
-                      type="text" 
-                      name="name"
-                      placeholder="Enter full name" 
-                      value={formData.name}
-                      onChange={handleChange}
-                    />
-                  </Form.Group>
-                </Col>
-
-                <Col md={6}>
-                  <Form.Group className="mb-3" controlId="signupPhone">
-                    <Form.Label>Phone Number</Form.Label>
-                    <Form.Control 
-                      type="tel" 
-                      name="phone"
-                      placeholder="Enter phone number" 
-                      value={formData.phone}
-                      onChange={handleChange}
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-
-              <Form.Group className="mb-3" controlId="signupEmail">
-                <Form.Label>Email address</Form.Label>
-                <Form.Control 
-                  type="email" 
-                  name="email"
-                  placeholder="Enter email" 
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3" controlId="signupPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control 
-                      type="password" 
-                      name="password"
-                      placeholder="Password" 
-                      value={formData.password}
-                      onChange={handleChange}
-                    />
-                  </Form.Group>
-                </Col>
-
-                <Col md={6}>
-                  <Form.Group className="mb-4" controlId="signupConfirmPassword">
-                    <Form.Label>Confirm Password</Form.Label>
-                    <Form.Control 
-                      type="password" 
-                      name="confirmPassword"
-                      placeholder="Confirm Password" 
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-
-              <Button type="submit" className="w-100 text-dark fw-bold auth-btn neon-btn">
-                Signup
-              </Button>
-            </Form>
-
+            {step === 1 ? (
+              <Form onSubmit={handleInitiate}>
+                <Row>
+                  <Col md={12}>
+                    <Form.Group className="mb-3" controlId="signupName">
+                      <Form.Label>Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="name"
+                        placeholder="Enter your full name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={12}>
+                    <Form.Group className="mb-3" controlId="signupUserID">
+                      <Form.Label>User ID</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="userID"
+                        placeholder="Choose a user ID"
+                        value={formData.userID}
+                        onChange={handleChange}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={12}>
+                    <Form.Group className="mb-3" controlId="signupEmail">
+                      <Form.Label>Email address</Form.Label>
+                      <Form.Control
+                        type="email"
+                        name="email"
+                        placeholder="Enter email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <Button type="submit" className="w-100 text-dark fw-bold auth-btn neon-btn">
+                  Send OTP
+                </Button>
+              </Form>
+            ) : (
+              <Form onSubmit={handleComplete}>
+                <Form.Group className="mb-3" controlId="signupOTP">
+                  <Form.Label>OTP</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="otp"
+                    placeholder="Enter OTP"
+                    value={formData.otp}
+                    onChange={handleChange}
+                    required
+                  />
+                </Form.Group>
+                <Row>
+                  <Col md={6}>
+                    <Form.Group className="mb-3" controlId="signupPassword">
+                      <Form.Label>Password</Form.Label>
+                      <Form.Control
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group className="mb-4" controlId="signupConfirmPassword">
+                      <Form.Label>Confirm Password</Form.Label>
+                      <Form.Control
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="Confirm Password"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <Button type="submit" className="w-100 text-dark fw-bold auth-btn neon-btn">
+                  Complete Signup
+                </Button>
+              </Form>
+            )}
             <div className="text-center mt-4">
-              <p className="text-light">Already have an account?{' '}
-                <Link to="/login" className="auth-link">Login</Link>
+              <p className="text-light">
+                Already have an account? <Link to="/login" className="auth-link">Login</Link>
               </p>
             </div>
           </Card.Body>
@@ -137,6 +177,6 @@ const Signup = () => {
       </Container>
     </div>
   );
-};
+}
 
 export default Signup;

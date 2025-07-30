@@ -1,59 +1,17 @@
-/* Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Global Cursor Ripple */
-
-.nav-main{
-  position:fixed;
+.nav-main {
+  position: fixed;
   top: 0;
   z-index: 1000;
   width: 100%;
   height: 70px;
-  
-}
-/* Custom Cursor */
-.custom-cursor {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid #ffffff;
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition: background 0.2s, transform 0.2s ease;
-  
-  
 }
 
-.ripple {
-  position: fixed;
-  width: 120px;
-  height: 120px;
-  background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 80%);
-  border-radius: 50%;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  animation: ripple-animation 0.8s ease-out;
-  z-index: 9998;
-}
-
-@keyframes ripple-animation {
-  from {
-    opacity: 1;
-    transform: scale(0.8) translate(-50%, -50%);
-  }
-  to {
-    opacity: 0;
-    transform: scale(1.5) translate(-50%, -50%);
-  }
-}
-
-/* Navbar Styles */
 .butter-navbar {
   width: 100%;
   background: rgba(255, 255, 255, 0.05);
@@ -89,7 +47,6 @@
   letter-spacing: 1px;
 }
 
-/* Nav Links */
 .nav-links {
   display: flex;
   gap: 24px;
@@ -140,7 +97,6 @@
   box-shadow: 0 0 15px #ff4dda;
 }
 
-/* Mobile Menu */
 .hamburger {
   display: none;
   font-size: 1.6rem;
@@ -204,7 +160,8 @@
     display: block;
   }
 }
-.user-greeting{
+
+.user-greeting {
   color: white;
   font-size: 1rem;
   font-weight: 500;

@@ -1,0 +1,182 @@
+.settings-background {
+  background-color: #000;
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  padding-top: 80px;
+}
+
+.settings-overlay-glow {
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(circle at 50% 50%, #350047, transparent 70%);
+  animation: pulseGlow 6s ease-in-out infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.settings-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.settings-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(187, 134, 252, 0.2);
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+.user-info-display {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid rgba(187, 134, 252, 0.1);
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 0 10px rgba(187, 134, 252, 0.3);
+}
+
+.delete-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.delete-confirm-box {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(187, 134, 252, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.delete-confirm-box p {
+  color: white;
+  margin-bottom: 1.5rem;
+}
+
+@keyframes pulseGlow {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 1s ease forwards;
+  transform: translateY(40px);
+  opacity: 0;
+}
+
+@keyframes slideUp {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.error-message {
+  color: #ff4dda;
+  background: rgba(255, 77, 218, 0.1);
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #bb86fc, #e040fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.neon-btn {
+  background-color: #bb86fc;
+  border: none;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  box-shadow: 0 0 10px #bb86fc60;
+}
+
+.neon-btn:hover {
+  background-color: #e040fb;
+  box-shadow: 0 0 15px #e040fb80, 0 0 30px #bb86fc50;
+}
+
+.auth-link {
+  color: #bb86fc;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.auth-link:hover {
+  color: #e040fb;
+}
+
+.auth-link::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: #e040fb;
+  transition: width 0.3s ease;
+}
+
+.auth-link:hover::after {
+  width: 100%;
+}
+
+.form-label,
+.form-control {
+  color: white;
+  background-color: transparent;
+  border-color: #bb86fc;
+}
+
+.form-control::placeholder {
+  color: #ccc;
+}
+
+.form-control:focus {
+  border-color: #e040fb;
+  box-shadow: 0 0 0 0.2rem rgba(187, 134, 252, 0.25);
+}
