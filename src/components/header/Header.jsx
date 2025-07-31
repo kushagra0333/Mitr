@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Logo from '../../assets/logo-2.png';
 import './header.css';
 
-const NoHeaderPath = () => ['/login', '/signup'];
+const NoHeaderPath = () => ['/login', '/signup',"/forgot-password"];
 
 function Header() {
   const location = useLocation();

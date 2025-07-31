@@ -55,8 +55,7 @@ export const signupComplete = async (data) => {
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Signup completion failed');
   }
-};
-export const forgotPassword = async (data) => {
+};export const forgotPassword = async (data) => {
   try {
     const response = await api.post('/auth/forgot-password', data);
     return response;
@@ -100,14 +99,21 @@ export const getProfile = async () => {
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch profile');
   }
-};
-
-export const changePassword = async (data) => {
+};export const changePassword = async (data) => {
   try {
     const response = await api.post('/user/change-password', data);
     return response;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to change password');
+  }
+};
+
+export const updateUserInfo = async (data) => {
+  try {
+    const response = await api.put('/auth/user/update', data);
+    return response;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to update user information');
   }
 };
 
@@ -119,16 +125,6 @@ export const deleteAccount = async () => {
     throw new Error(error.response?.data?.message || 'Failed to delete account');
   }
 };
-
-export const updateUserInfo = async (data) => {
-  try {
-    const response = await api.put('/user/update', data);
-    return response;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Failed to update user information');
-  }
-};
-
 // ====================== DEVICE ======================
 export const createDevice = async (data, apiKey) => {
   try {
