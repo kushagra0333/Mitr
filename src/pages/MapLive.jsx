@@ -11,10 +11,7 @@ import {
   getSessionHistory, 
   getSessionStatus,
   getSessionDetails,
-  updateEmergencyContacts,
-  updateTriggerWords
 } from '../services/api';
-import { sendDataToDevice } from '../services/bluetooth';
 import './DeviceDetails.css';
 
 // Fix for Leaflet default marker icons
@@ -158,30 +155,6 @@ function DeviceDetails() {
       console.error('Stop trigger error:', err);
     } finally {
       setIsStopping(false);
-    }
-  };
-
-  const handleUpdateSettings = async ({ emergencyContacts, triggerWords, deviceConnection }) => {
-    try {
-      setError('');
-      await Promise.all([
-        updateEmergencyContacts(deviceId, emergencyContacts),
-        updateTriggerWords(deviceId, triggerWords)
-      ]);
-
-      if (deviceConnection) {
-        const deviceData = {
-          emergency_contact: emergencyContacts.map(contact => contact.phone),
-          trigger_word: triggerWords
-        };
-        await sendDataToDevice(deviceConnection, JSON.stringify(deviceData));
-      }
-
-      await fetchData();
-      setShowBluetoothModal(false);
-    } catch (err) {
-      setError(err.message || 'Failed to update settings or send to device');
-      console.error('Update settings error:', err);
     }
   };
 
@@ -486,16 +459,6 @@ function DeviceDetails() {
           </Col>
         </Row>
 
-        <BluetoothModal
-          show={showBluetoothModal}
-          onHide={() => setShowBluetoothModal(false)}
-          onSubmit={handleUpdateSettings}
-          initialData={{
-            emergencyContacts: device.emergencyContacts || [],
-            triggerWords: device.triggerWords || []
-          }}
-          onDeviceSelect={setSelectedDevice}
-        />
       </Container>
     </div>
   );

@@ -1,34 +1,43 @@
 import { useState, useEffect } from 'react';
-import { connectBluetoothDevice, sendDataToDevice } from '../services/bluetooth';
+import { Card, Button, Spinner, Alert, ListGroup } from 'react-bootstrap';
+import { FaBluetooth, FaRedo, FaCheck } from 'react-icons/fa';
+import BluetoothService from '../services/bluetooth';
 import './BluetoothModal.css';
+
 function BluetoothModal({ show, onHide, onSubmit, initialData }) {
-  const [devices, setDevices] = useState([]);
-  const [selectedDevice, setSelectedDevice] = useState(null);
-  const [emergencyContacts, setEmergencyContacts] = useState(initialData.emergencyContacts || []);
-  const [triggerWords, setTriggerWords] = useState(initialData.triggerWords || []);
+  const [status, setStatus] = useState('idle'); // idle, scanning, connected, error
+  const [error, setError] = useState('');
+  const [connection, setConnection] = useState(null); // { device, characteristic }
+  const [settings, setSettings] = useState({
+    emergencyContacts: initialData.emergencyContacts || [],
+    triggerWords: initialData.triggerWords || []
+  });
   const [newContact, setNewContact] = useState({ name: '', phone: '' });
   const [newWord, setNewWord] = useState('');
-  const [error, setError] = useState('');
 
   useEffect(() => {
     if (show) {
-      scanDevices();
+      setStatus('idle');
+      setError('');
     }
   }, [show]);
 
-  const scanDevices = async () => {
+  const handleScan = async () => {
+    setStatus('scanning');
+    setError('');
+    
     try {
-      setError('');
-      const availableDevices = await connectBluetoothDevice();
-      setDevices(availableDevices);
+      const conn = await BluetoothService.connect(); // FIXED
+      setConnection(conn);
+      setStatus('connected');
     } catch (err) {
-      setError('Failed to scan for devices');
-      console.error('Bluetooth error:', err);
+      setError(err.message);
+      setStatus('error');
     }
   };
 
   const handleAddContact = () => {
-    if (emergencyContacts.length >= 3) {
+    if (settings.emergencyContacts.length >= 3) {
       setError('Maximum 3 emergency contacts allowed');
       return;
     }
@@ -36,151 +45,201 @@ function BluetoothModal({ show, onHide, onSubmit, initialData }) {
       setError('Contact name and phone are required');
       return;
     }
-    setEmergencyContacts([...emergencyContacts, newContact]);
+    setSettings(prev => ({
+      ...prev,
+      emergencyContacts: [...prev.emergencyContacts, newContact]
+    }));
     setNewContact({ name: '', phone: '' });
     setError('');
   };
 
-  const handleRemoveContact = (index) => {
-    setEmergencyContacts(emergencyContacts.filter((_, i) => i !== index));
-  };
-
   const handleAddWord = () => {
-    if (!newWord) {
+    if (!newWord.trim()) {
       setError('Trigger word is required');
       return;
     }
-    setTriggerWords([...triggerWords, newWord]);
+    setSettings(prev => ({
+      ...prev,
+      triggerWords: [...prev.triggerWords, newWord.trim()]
+    }));
     setNewWord('');
     setError('');
   };
+const handleSubmit = async () => {
+  try {
+    if (!connection) throw new Error('No device connected');
 
-  const handleRemoveWord = (index) => {
-    setTriggerWords(triggerWords.filter((_, i) => i !== index));
-  };
-
-  const handleSubmit = async () => {
-    if (!selectedDevice) {
-      setError('Please select a device');
-      return;
-    }
-    const data = {
-      emergency_contacts: emergencyContacts,
-      trigger_words: triggerWords
+    // Prepare JSON format expected by device
+    const jsonToSend = {
+      emergency_contact: settings.emergencyContacts.map(c => c.phone),
+      trigger_word: settings.triggerWords
     };
-    try {
-      await sendDataToDevice(selectedDevice, JSON.stringify(data));
-      onSubmit({ emergencyContacts, triggerWords });
-      onHide();
-    } catch (err) {
-      setError('Failed to send data to device');
-      console.error('Bluetooth send error:', err);
-    }
-  };
 
+    // Step 1: Send to Bluetooth device
+    await BluetoothService.sendJson(connection.characteristic, jsonToSend);
+
+    // ✅ Step 2: Update settings to your backend server
+    await fetch('/api/update-settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        emergencyContacts: settings.emergencyContacts,
+        triggerWords: settings.triggerWords
+      })
+    });
+
+    // Step 3: Trigger onSubmit callback and close modal
+    onSubmit({
+      emergencyContacts: settings.emergencyContacts,
+      triggerWords: settings.triggerWords,
+      deviceConnection: connection.device
+    });
+    onHide();
+  } catch (err) {
+    setError(`Failed to send settings: ${err.message}`);
+  }
+};
   if (!show) return null;
 
   return (
     <div className="bluetooth-modal-overlay">
-      <div className="bluetooth-modal">
-        <div className="modal-header">
-          <h3 className="gradient-text">Connect Device & Update Settings</h3>
-          <button className="close-button" onClick={onHide}>&times;</button>
-        </div>
-        
-        <div className="modal-body">
-          {error && <div className="error-message">{error}</div>}
-          
-          <button onClick={scanDevices} className="refresh-button">
-            Refresh Devices
-          </button>
-          
-          <div className="devices-list">
-            {devices.map((device, index) => (
-              <div 
-                key={index}
-                className={`device-item ${selectedDevice === device ? 'selected' : ''}`}
-                onClick={() => setSelectedDevice(device)}
-              >
-                {device.name || `Device ${index + 1}`}
+      <Card className="bluetooth-modal-card glass-effect">
+        <Card.Header className="d-flex justify-content-between align-items-center">
+          <h4 className="text-gradient mb-0">
+            <FaBluetooth className="me-2" />
+            Device Settings
+          </h4>
+          <Button variant="close" onClick={onHide} />
+        </Card.Header>
+
+        <Card.Body>
+          {error && <Alert variant="danger">{error}</Alert>}
+
+          <div className="mb-4">
+            <h5>Bluetooth Connection</h5>
+            {status === 'idle' && (
+              <Button variant="primary" onClick={handleScan} className="w-100">
+                <FaBluetooth className="me-2" />
+                Scan for Devices
+              </Button>
+            )}
+
+            {status === 'scanning' && (
+              <div className="text-center py-3">
+                <Spinner animation="border" variant="primary" />
+                <p className="mt-2">Searching for MITR devices...</p>
               </div>
-            ))}
+            )}
+
+            {status === 'error' && (
+              <div className="text-center">
+                <Alert variant="warning" className="text-start">
+                  <p>Ensure:</p>
+                  <ListGroup variant="flush">
+                    <ListGroup.Item>• Bluetooth is enabled</ListGroup.Item>
+                    <ListGroup.Item>• Device is in pairing mode</ListGroup.Item>
+                    <ListGroup.Item>• Using Chrome/Edge</ListGroup.Item>
+                    <ListGroup.Item>• Site loaded via HTTPS</ListGroup.Item>
+                  </ListGroup>
+                </Alert>
+                <Button variant="outline-primary" onClick={handleScan} className="mt-2">
+                  <FaRedo className="me-2" />
+                  Try Again
+                </Button>
+              </div>
+            )}
+
+            {status === 'connected' && (
+              <Alert variant="success" className="d-flex align-items-center">
+                <FaCheck className="me-2" />
+                Connected to: <strong className="ms-1">{connection?.device?.name || 'Unknown Device'}</strong>
+              </Alert>
+            )}
           </div>
-          
-          <div className="form-section">
-            <h4>Add Emergency Contact</h4>
-            <div className="input-group">
+
+          {/* Emergency Contacts */}
+          <div className="mb-4">
+            <h5>Emergency Contacts</h5>
+            <div className="d-flex gap-2 mb-2">
               <input
                 type="text"
+                className="form-control"
                 placeholder="Name"
                 value={newContact.name}
-                onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
+                onChange={(e) => setNewContact({...newContact, name: e.target.value})}
               />
               <input
                 type="tel"
+                className="form-control"
                 placeholder="Phone"
                 value={newContact.phone}
-                onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
+                onChange={(e) => setNewContact({...newContact, phone: e.target.value})}
               />
-              <button onClick={handleAddContact} className="add-button">
+              <Button variant="outline-primary" onClick={handleAddContact}>
                 Add
-              </button>
+              </Button>
             </div>
-            
-            <div className="contacts-list">
-              {emergencyContacts.map((contact, index) => (
-                <div key={index} className="contact-item">
+            <ListGroup>
+              {settings.emergencyContacts.map((contact, index) => (
+                <ListGroup.Item key={index} className="d-flex justify-content-between align-items-center">
                   <span>{contact.name} - {contact.phone}</span>
-                  <button 
-                    onClick={() => handleRemoveContact(index)}
-                    className="remove-button"
+                  <Button 
+                    variant="outline-danger" 
+                    size="sm"
+                    onClick={() => setSettings(prev => ({
+                      ...prev,
+                      emergencyContacts: prev.emergencyContacts.filter((_, i) => i !== index)
+                    }))}
                   >
                     Remove
-                  </button>
-                </div>
+                  </Button>
+                </ListGroup.Item>
               ))}
-            </div>
+            </ListGroup>
           </div>
-          
-          <div className="form-section">
-            <h4>Add Trigger Word</h4>
-            <div className="input-group">
+
+          {/* Trigger Words */}
+          <div className="mb-4">
+            <h5>Trigger Words</h5>
+            <div className="d-flex gap-2 mb-2">
               <input
                 type="text"
-                placeholder="Trigger Word"
+                className="form-control"
+                placeholder="New trigger word"
                 value={newWord}
                 onChange={(e) => setNewWord(e.target.value)}
               />
-              <button onClick={handleAddWord} className="add-button">
+              <Button variant="outline-primary" onClick={handleAddWord}>
                 Add
-              </button>
+              </Button>
             </div>
-            
-            <div className="trigger-words-list">
-              {triggerWords.map((word, index) => (
-                <div key={index} className="trigger-word-item">
-                  <span>{word}</span>
+            <div className="d-flex flex-wrap gap-2">
+              {settings.triggerWords.map((word, index) => (
+                <span key={index} className="badge bg-primary d-flex align-items-center">
+                  {word}
                   <button 
-                    onClick={() => handleRemoveWord(index)}
-                    className="remove-button"
-                  >
-                    Remove
-                  </button>
-                </div>
+                    className="btn-close btn-close-white ms-2" 
+                    style={{ fontSize: '0.5rem' }}
+                    onClick={() => setSettings(prev => ({
+                      ...prev,
+                      triggerWords: prev.triggerWords.filter((_, i) => i !== index)
+                    }))}
+                  />
+                </span>
               ))}
             </div>
           </div>
-        </div>
-        
-        <div className="modal-footer">
-          <button className="secondary-button" onClick={onHide}>
-            Close
-          </button>
-          <button className="primary-button" onClick={handleSubmit}>
-            Save & Send
-          </button>
-        </div>
-      </div>
+        </Card.Body>
+
+        <Card.Footer className="d-flex justify-content-end gap-2">
+          <Button variant="secondary" onClick={onHide}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleSubmit} disabled={status !== 'connected'}>
+            Save & Send to Device
+          </Button>
+        </Card.Footer>
+      </Card>
     </div>
   );
 }

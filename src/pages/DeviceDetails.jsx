@@ -5,15 +5,9 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Container, Card, Button, ListGroup, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import BluetoothModal from '../components/BluetoothModal';
-import { 
-  getDevice, 
-  stopTrigger, 
-  getSessionHistory, 
-  getSessionStatus,
-  getSessionDetails,
-  updateEmergencyContacts,
-  updateTriggerWords
-} from '../services/api';
+import { getSessionDetails,getDevice, getSessionHistory, getSessionStatus, stopTrigger, updateEmergencyContacts, updateTriggerWords } from '../services/api';
+import BluetoothService from '../services/bluetooth';
+
 import { sendDataToDevice } from '../services/bluetooth';
 import './DeviceDetails.css';
 
@@ -174,31 +168,32 @@ function DeviceDetails() {
       setIsStopping(false);
     }
   };
+const handleUpdateSettings = async ({ emergencyContacts, triggerWords, deviceConnection }) => {
+  try {
+    setError('');
+    
+    // Update backend first
+    await Promise.all([
+      updateEmergencyContacts(deviceId, emergencyContacts),
+      updateTriggerWords(deviceId, triggerWords)
+    ]);
 
-  const handleUpdateSettings = async ({ emergencyContacts, triggerWords, deviceConnection }) => {
-    try {
-      setError('');
-      await Promise.all([
-        updateEmergencyContacts(deviceId, emergencyContacts),
-        updateTriggerWords(deviceId, triggerWords)
-      ]);
-
-      if (deviceConnection) {
-        const deviceData = {
-          emergency_contact: emergencyContacts.map(contact => contact.phone),
-          trigger_word: triggerWords
-        };
-        await sendDataToDevice(deviceConnection, JSON.stringify(deviceData));
-      }
-
-      await fetchData();
-      setShowBluetoothModal(false);
-    } catch (err) {
-      setError(err.message || 'Failed to update settings or send to device');
-      console.error('Update settings error:', err);
+    // Then send to Bluetooth device if connected
+    if (deviceConnection) {
+      const payload = {
+        emergency_contact: emergencyContacts.map(c => c.phone),
+        trigger_word: triggerWords
+      };
+      await BluetoothService.sendSettings(deviceConnection, payload);
     }
-  };
 
+    await fetchData(); // Refresh device data
+    setShowBluetoothModal(false);
+  } catch (err) {
+    setError(err.message || 'Failed to update settings');
+    console.error('Update error:', err);
+  }
+};
   if (loading) {
     return (
       <div className="device-details-background">
