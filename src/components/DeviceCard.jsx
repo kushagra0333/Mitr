@@ -1,27 +1,23 @@
-import { Card, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-
+import "./DeviceCard.css";
 function DeviceCard({ device }) {
   const navigate = useNavigate();
 
   return (
-    <Card className="device-card glass-effect animate-slide-up">
-      <Card.Body>
-        <Card.Title className="text-gradient">{device.deviceId}</Card.Title>
-        <Card.Text>
-          <strong>Status:</strong> {device.isTriggered ? 'Triggered' : 'Idle'}<br />
-          <strong>Emergency Contacts:</strong> {device.emergencyContacts.length}<br />
-          <strong>Trigger Words:</strong> {device.triggerWords.join(', ')}<br />
-          <strong>Last Active:</strong> {device.lastActive ? new Date(device.lastActive).toLocaleString() : 'Never'}
-        </Card.Text>
-        <Button
-          className="neon-btn"
-          onClick={() => navigate(`/device/${device.deviceId}`)}
-        >
+    <div className="device-card" onClick={() => navigate(`/device/${device.deviceId}`)}>
+      <div className="device-card-content">
+        <h3 className="gradient-text">{device.deviceId}</h3>
+        <div className="device-details">
+          <p><span>Status:</span> {device.isTriggered ? 'Triggered' : 'Idle'}</p>
+          <p><span>Emergency Contacts:</span> {(device.emergencyContacts || []).length}</p>
+          <p><span>Trigger Words:</span> {(device.triggerWords || []).join(', ') || 'None'}</p>
+          <p><span>Last Active:</span> {device.lastActive ? new Date(device.lastActive).toLocaleString() : 'Never'}</p>
+        </div>
+        <button className="view-details-button">
           View Details
-        </Button>
-      </Card.Body>
-    </Card>
+        </button>
+      </div>
+    </div>
   );
 }
 

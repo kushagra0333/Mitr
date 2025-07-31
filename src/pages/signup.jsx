@@ -37,30 +37,35 @@ function Signup() {
       setError(err.message || 'Failed to send OTP');
     }
   };
-
-  const handleComplete = async (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-    try {
-      const response = await signupComplete({
-        name: formData.name, // Add name here
-        userID: formData.userID,
-        email: formData.email,
-        otp: formData.otp,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
-      });
+  
+const handleComplete = async (e) => {
+  e.preventDefault();
+  if (formData.password !== formData.confirmPassword) {
+    setError('Passwords do not match');
+    return;
+  }
+  try {
+    const response = await signupComplete({
+      name: formData.name,
+      userID: formData.userID,
+      email: formData.email,
+      otp: formData.otp,
+      password: formData.password,
+      confirmPassword: formData.confirmPassword,
+    });
+    
+    // Check if response exists and has data
+    if (response && response.data) {
       localStorage.setItem('mitr-token', response.data.token);
       localStorage.setItem('mitr-user', JSON.stringify(response.data.user));
       navigate('/dashboard');
-    } catch (err) {
-      setError(err.message || 'Invalid OTP');
+    } else {
+      setError('Invalid response from server');
     }
-  };
-
+  } catch (err) {
+    setError(err.message || 'Invalid OTP');
+  }
+};
   return (
     <div className="auth-background">
       <div className="auth-overlay-glow" />

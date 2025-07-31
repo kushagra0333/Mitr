@@ -9,9 +9,10 @@ import DeviceDetails from './pages/DeviceDetails';
 import MapPage from './pages/MapPage';
 import TriggerHistory from './pages/TriggerHistory';
 import Settings from './pages/Settings';
-import './index.css';
+import './App.css';
 import CustomCursor from './components/CustomCursor';
 import ForgotPassword from './pages/ForgotPassword';
+import Footer from './components/footer/footer';
 const App = () => {
   return (
     <Router>
@@ -28,6 +29,7 @@ const App = () => {
         <Route path="/settings" element={<Settings />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
+      <Footer />
     </Router>
   );
 };

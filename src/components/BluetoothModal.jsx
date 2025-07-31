@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Modal, Button, Form, ListGroup } from 'react-bootstrap';
 import { connectBluetoothDevice, sendDataToDevice } from '../services/bluetooth';
-
+import './BluetoothModal.css';
 function BluetoothModal({ show, onHide, onSubmit, initialData }) {
   const [devices, setDevices] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState(null);
@@ -19,10 +18,12 @@ function BluetoothModal({ show, onHide, onSubmit, initialData }) {
 
   const scanDevices = async () => {
     try {
+      setError('');
       const availableDevices = await connectBluetoothDevice();
       setDevices(availableDevices);
     } catch (err) {
       setError('Failed to scan for devices');
+      console.error('Bluetooth error:', err);
     }
   };
 
@@ -64,8 +65,8 @@ function BluetoothModal({ show, onHide, onSubmit, initialData }) {
       return;
     }
     const data = {
-      emergency_contact: emergencyContacts.map(c => c.phone),
-      trigger_word: triggerWords
+      emergency_contacts: emergencyContacts,
+      trigger_words: triggerWords
     };
     try {
       await sendDataToDevice(selectedDevice, JSON.stringify(data));
@@ -73,87 +74,114 @@ function BluetoothModal({ show, onHide, onSubmit, initialData }) {
       onHide();
     } catch (err) {
       setError('Failed to send data to device');
+      console.error('Bluetooth send error:', err);
     }
   };
 
+  if (!show) return null;
+
   return (
-    <Modal show={show} onHide={onHide} centered className="glass-effect">
-      <Modal.Header closeButton>
-        <Modal.Title className="text-gradient">Connect Device & Update Settings</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {error && <div className="error-message">{error}</div>}
-        <Button onClick={scanDevices} className="neon-btn mb-3">Refresh Devices</Button>
-        <ListGroup className="mb-3">
-          {devices.map((device, index) => (
-            <ListGroup.Item
-              key={index}
-              active={selectedDevice === device}
-              onClick={() => setSelectedDevice(device)}
-              style={{ cursor: 'pointer', background: selectedDevice === device ? '#bb86fc' : 'transparent' }}
-            >
-              {device.name || `Device ${index + 1}`}
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
-        <Form>
-          <Form.Group className="mb-3">
-            <Form.Label>Add Emergency Contact</Form.Label>
-            <div className="d-flex gap-2">
-              <Form.Control
+    <div className="bluetooth-modal-overlay">
+      <div className="bluetooth-modal">
+        <div className="modal-header">
+          <h3 className="gradient-text">Connect Device & Update Settings</h3>
+          <button className="close-button" onClick={onHide}>&times;</button>
+        </div>
+        
+        <div className="modal-body">
+          {error && <div className="error-message">{error}</div>}
+          
+          <button onClick={scanDevices} className="refresh-button">
+            Refresh Devices
+          </button>
+          
+          <div className="devices-list">
+            {devices.map((device, index) => (
+              <div 
+                key={index}
+                className={`device-item ${selectedDevice === device ? 'selected' : ''}`}
+                onClick={() => setSelectedDevice(device)}
+              >
+                {device.name || `Device ${index + 1}`}
+              </div>
+            ))}
+          </div>
+          
+          <div className="form-section">
+            <h4>Add Emergency Contact</h4>
+            <div className="input-group">
+              <input
                 type="text"
                 placeholder="Name"
                 value={newContact.name}
                 onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
               />
-              <Form.Control
+              <input
                 type="tel"
                 placeholder="Phone"
                 value={newContact.phone}
                 onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
               />
-              <Button onClick={handleAddContact} className="neon-btn">Add</Button>
+              <button onClick={handleAddContact} className="add-button">
+                Add
+              </button>
             </div>
-          </Form.Group>
-          <ListGroup className="mb-3">
-            {emergencyContacts.map((contact, index) => (
-              <ListGroup.Item key={index}>
-                {contact.name} - {contact.phone}
-                <Button variant="danger" size="sm" className="float-end" onClick={() => handleRemoveContact(index)}>
-                  Remove
-                </Button>
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-          <Form.Group className="mb-3">
-            <Form.Label>Add Trigger Word</Form.Label>
-            <div className="d-flex gap-2">
-              <Form.Control
+            
+            <div className="contacts-list">
+              {emergencyContacts.map((contact, index) => (
+                <div key={index} className="contact-item">
+                  <span>{contact.name} - {contact.phone}</span>
+                  <button 
+                    onClick={() => handleRemoveContact(index)}
+                    className="remove-button"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="form-section">
+            <h4>Add Trigger Word</h4>
+            <div className="input-group">
+              <input
                 type="text"
                 placeholder="Trigger Word"
                 value={newWord}
                 onChange={(e) => setNewWord(e.target.value)}
               />
-              <Button onClick={handleAddWord} className="neon-btn">Add</Button>
+              <button onClick={handleAddWord} className="add-button">
+                Add
+              </button>
             </div>
-          </Form.Group>
-          <ListGroup>
-            {triggerWords.map((word, index) => (
-              <ListGroup.Item key={index}>
-                {word}
-                <Button variant="danger" size="sm" className="float-end" onClick={() => handleRemoveWord(index)}>
-                  Remove
-                </Button>
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>Close</Button>
-        <Button className="neon-btn" onClick={handleSubmit}>Save & Send</Button>
-      </Modal.Footer>
-    </Modal>
+            
+            <div className="trigger-words-list">
+              {triggerWords.map((word, index) => (
+                <div key={index} className="trigger-word-item">
+                  <span>{word}</span>
+                  <button 
+                    onClick={() => handleRemoveWord(index)}
+                    className="remove-button"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        <div className="modal-footer">
+          <button className="secondary-button" onClick={onHide}>
+            Close
+          </button>
+          <button className="primary-button" onClick={handleSubmit}>
+            Save & Send
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

@@ -1,26 +1,40 @@
 import { useState, useEffect } from 'react';
-import { Container, Card, Button, Row, Col, Modal, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import DeviceCard from '../components/DeviceCard';
-import { getProfile, linkDevice } from '../services/api';
+import { getProfile, linkDevice, createDevice } from '../services/api';
 import './dashboard.css';
 
 function Dashboard() {
-  const [user, setUser] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  const [user, setUser] = useState({
+    userID: '',
+    email: '',
+    deviceIds: [],
+    devices: [],
+    createdAt: new Date(),
+  });
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [deviceId, setDeviceId] = useState('');
   const [devicePassword, setDevicePassword] = useState('');
+  const [apiKey, setApiKey] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
+        setLoading(true);
         const response = await getProfile();
-        setUser(response.data.user);
+        setUser({
+          ...response.data.user,
+          devices: response.data.user.devices || [],
+        });
       } catch (err) {
-        setError(err.message || 'Failed to fetch profile');
+        setError(err.response?.data?.message || err.message || 'Failed to fetch profile');
         navigate('/login');
+      } finally {
+        setLoading(false);
       }
     };
     fetchProfile();
@@ -28,82 +42,210 @@ function Dashboard() {
 
   const handleLinkDevice = async () => {
     try {
-      await linkDevice({ deviceId, devicePassword });
-      setShowModal(false);
+      setError('');
+      if (!deviceId.trim() || !devicePassword.trim()) {
+        throw new Error('Device ID and password are required');
+      }
+      if (!/^[A-Za-z0-9]+$/.test(deviceId.trim())) {
+        throw new Error('Device ID must be alphanumeric');
+      }
+      if (devicePassword.length < 6) {
+        throw new Error('Device password must be at least 6 characters');
+      }
+
+      const response = await linkDevice({
+        deviceId: deviceId.trim(),
+        devicePassword: devicePassword.trim(),
+      });
+
+      const profileResponse = await getProfile();
+      setUser({
+        ...profileResponse.data.user,
+        devices: profileResponse.data.user.devices || [],
+      });
+
+      setShowLinkModal(false);
       setDeviceId('');
       setDevicePassword('');
-      setError('');
-      const response = await getProfile();
-      setUser(response.data.user);
+      alert('Device linked successfully!');
     } catch (err) {
-      setError(err.message || 'Failed to link device');
+      setError(err.response?.data?.message || err.message || 'Failed to link device');
     }
   };
 
-  if (!user) return <div>Loading...</div>;
+  const handleCreateDevice = async () => {
+    try {
+      setError('');
+      if (!deviceId.trim() || !devicePassword.trim() || !apiKey.trim()) {
+        throw new Error('Device ID, password, and API key are required');
+      }
+      if (!/^[A-Za-z0-9]+$/.test(deviceId.trim())) {
+        throw new Error('Device ID must be alphanumeric');
+      }
+      if (devicePassword.length < 6) {
+        throw new Error('Device password must be at least 6 characters');
+      }
+
+      const response = await createDevice(
+        {
+          deviceId: deviceId.trim(),
+          devicePassword: devicePassword.trim(),
+        },
+        apiKey.trim()
+      );
+
+      setShowCreateModal(false);
+      setDeviceId('');
+      setDevicePassword('');
+      setApiKey('');
+      alert(`Device ${response.data.data.device.deviceId} created successfully!`);
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Failed to create device');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-spinner"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="dashboard-background">
-      <div className="dashboard-overlay-glow" />
-      <Container className="dashboard-container">
-        <Card className="user-info-card glass-effect animate-slide-up">
-          <Card.Body className="text-white">
-            <h3 className="text-gradient">User Profile</h3>
-            <p><strong>User ID:</strong> {user.userID}</p>
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Devices Connected:</strong> {user.deviceIds.length}</p>
-            <p><strong>Account Created:</strong> {new Date(user.createdAt).toLocaleString()}</p>
-          </Card.Body>
-        </Card>
-
-        <div className="device-section">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h3 className="text-gradient">Your Devices</h3>
-            <Button className="neon-btn" onClick={() => setShowModal(true)}>Add Device</Button>
+    <div className="dashboard">
+      <div className="dashboard-overlay"></div>
+      
+      <div className="dashboard-content">
+        <div className="user-profile-card">
+          <h3 className="gradient-text">User Profile</h3>
+          <div className="profile-details">
+            <p><span>User ID:</span> {user.userID}</p>
+            <p><span>Email:</span> {user.email}</p>
+            <p><span>Devices Connected:</span> {user.deviceIds.length}</p>
+            <p><span>Account Created:</span> {new Date(user.createdAt).toLocaleString()}</p>
           </div>
-          {error && <div className="error-message">{error}</div>}
-          <Row>
-            {user.devices.map(device => (
-              <Col md={4} key={device.deviceId} className="mb-4">
-                <DeviceCard device={device} />
-              </Col>
-            ))}
-          </Row>
         </div>
 
-        <Modal show={showModal} onHide={() => setShowModal(false)} centered className="glass-effect">
-          <Modal.Header closeButton>
-            <Modal.Title className="text-gradient">Link New Device</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {error && <div className="error-message">{error}</div>}
-            <Form>
-              <Form.Group className="mb-3">
-                <Form.Label>Device ID</Form.Label>
-                <Form.Control
+        <div className="devices-section">
+          <div className="devices-header">
+            <h3 className="gradient-text">Your Devices</h3>
+            <div className="device-actions">
+              <button className="glow-button" onClick={() => setShowCreateModal(true)}>
+                Create Device
+              </button>
+              <button className="glow-button" onClick={() => setShowLinkModal(true)}>
+                Add Device
+              </button>
+            </div>
+          </div>
+
+          {error && <div className="error-message">{error}</div>}
+
+          <div className="devices-grid">
+            {user.devices.length > 0 ? (
+              user.devices.map(device => (
+                <DeviceCard key={device._id} device={device} />
+              ))
+            ) : (
+              <div className="no-devices">
+                <p>No devices connected yet</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Link Device Modal */}
+      {showLinkModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3 className="gradient-text">Link New Device</h3>
+              <button className="close-button" onClick={() => { setShowLinkModal(false); setError(''); }}>&times;</button>
+            </div>
+            <div className="modal-body">
+              {error && <div className="error-message">{error}</div>}
+              <div className="form-group">
+                <label>Device ID</label>
+                <input
                   type="text"
                   value={deviceId}
                   onChange={(e) => setDeviceId(e.target.value)}
-                  placeholder="Enter device ID"
+                  placeholder="Enter device ID (e.g., MITRDEVX5T9K2)"
                 />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Device Password</Form.Label>
-                <Form.Control
+              </div>
+              <div className="form-group">
+                <label>Device Password</label>
+                <input
                   type="password"
                   value={devicePassword}
                   onChange={(e) => setDevicePassword(e.target.value)}
-                  placeholder="Enter device password"
+                  placeholder="Enter device password (e.g., s3C4rT9z1Q)"
                 />
-              </Form.Group>
-            </Form>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
-            <Button className="neon-btn" onClick={handleLinkDevice}>Link Device</Button>
-          </Modal.Footer>
-        </Modal>
-      </Container>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="secondary-button" onClick={() => { setShowLinkModal(false); setError(''); }}>
+                Cancel
+              </button>
+              <button className="glow-button" onClick={handleLinkDevice}>
+                Link Device
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Device Modal */}
+      {showCreateModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3 className="gradient-text">Create New Device</h3>
+              <button className="close-button" onClick={() => { setShowCreateModal(false); setError(''); }}>&times;</button>
+            </div>
+            <div className="modal-body">
+              {error && <div className="error-message">{error}</div>}
+              <div className="form-group">
+                <label>Device ID</label>
+                <input
+                  type="text"
+                  value={deviceId}
+                  onChange={(e) => setDeviceId(e.target.value)}
+                  placeholder="Enter device ID (e.g., MITRDEVX5T9K2)"
+                />
+              </div>
+              <div className="form-group">
+                <label>Device Password</label>
+                <input
+                  type="password"
+                  value={devicePassword}
+                  onChange={(e) => setDevicePassword(e.target.value)}
+                  placeholder="Enter device password (e.g., s3C4rT9z1Q)"
+                />
+              </div>
+              <div className="form-group">
+                <label>API Key</label>
+                <input
+                  type="password"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="Enter API key"
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="secondary-button" onClick={() => { setShowCreateModal(false); setError(''); }}>
+                Cancel
+              </button>
+              <button className="glow-button" onClick={handleCreateDevice}>
+                Create Device
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

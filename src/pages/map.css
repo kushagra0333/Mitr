@@ -1,12 +1,12 @@
-.map-background {
-  background-color: #000;
+.map-page-background {
+  background: radial-gradient(ellipse at top left, #20002c, #0e0e10);
+  min-height: 100vh;
+  padding: 2rem 0;
   position: relative;
   overflow: hidden;
-  min-height: 100vh;
-  padding-top: 80px;
 }
 
-.map-overlay-glow {
+.map-page-overlay-glow {
   position: absolute;
   top: -20%;
   left: -20%;
@@ -18,24 +18,59 @@
   pointer-events: none;
 }
 
-.map-container {
-  max-width: 1400px;
+.map-page-container {
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-  position: relative;
+  padding: 0 15px;
   z-index: 2;
+  position: relative;
 }
 
-.map-card {
-  background: rgba(255, 255, 255, 0.05);
+.glass-effect {
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(187, 134, 252, 0.2);
-  border-radius: 16px;
-  padding: 2rem;
+  border-radius: 16px; 
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 0 transparent;
+  transition: all 0.3s ease;
 }
 
-.map-container .leaflet-container {
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(187, 134, 252, 0.3);
+.glass-effect:hover {
+  box-shadow: 0 0 18px rgba(224, 64, 251, 0.3);
+  transform: translateY(-6px);
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #bb86fc, #e040fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.neon-btn {
+  background-color: #bb86fc;
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(187, 134, 252, 0.6);
+}
+
+.neon-btn:hover {
+  background-color: #e040fb;
+  box-shadow: 0 0 15px rgba(224, 64, 251, 0.8), 0 0 30px rgba(187, 134, 252, 0.5);
+}
+
+.animate-slide-up {
+  animation: slideUp 1s ease forwards;
+  transform: translateY(40px);
+  opacity: 0;
+}
+
+@keyframes slideUp {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes pulseGlow {
@@ -53,15 +88,28 @@
   }
 }
 
-.animate-slide-up {
-  animation: slideUp 1s ease forwards;
-  transform: translateY(40px);
-  opacity: 0;
+.map-container {
+  height: 500px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-@keyframes slideUp {
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+.list-group-item {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #d0d0d0;
+}
+
+.list-group-item small {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.error-message {
+  color: #ff4dda;
+  background: rgba(255, 77, 218, 0.1);
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  text-align: center;
 }

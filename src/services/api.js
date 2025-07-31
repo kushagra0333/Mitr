@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api'; // Update to your backend URL
+const API_URL = 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -18,7 +18,19 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Auth endpoints
+// Handle 401 Unauthorized globally
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('mitr-token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+// ====================== AUTH ======================
 export const login = async (data) => {
   try {
     const response = await api.post('/auth/login', data);
@@ -27,11 +39,10 @@ export const login = async (data) => {
     throw new Error(error.response?.data?.message || 'Login failed');
   }
 };
-
 export const signupInitiate = async (data) => {
   try {
     const response = await api.post('/auth/signup/initiate', data);
-    return response;
+    return response.data; // Make sure to return response.data
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Signup initiation failed');
   }
@@ -40,12 +51,11 @@ export const signupInitiate = async (data) => {
 export const signupComplete = async (data) => {
   try {
     const response = await api.post('/auth/signup/complete', data);
-    return response;
+    return response.data; // This should now have the token in response.data.data.token
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Signup completion failed');
   }
 };
-
 export const forgotPassword = async (data) => {
   try {
     const response = await api.post('/auth/forgot-password', data);
@@ -82,7 +92,7 @@ export const logoutAll = async () => {
   }
 };
 
-// User endpoints
+// ====================== USER ======================
 export const getProfile = async () => {
   try {
     const response = await api.get('/user/profile');
@@ -94,7 +104,7 @@ export const getProfile = async () => {
 
 export const changePassword = async (data) => {
   try {
-    const response = await api.put('/user/change-password', data);
+    const response = await api.post('/user/change-password', data);
     return response;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to change password');
@@ -110,7 +120,27 @@ export const deleteAccount = async () => {
   }
 };
 
-// Device endpoints
+export const updateUserInfo = async (data) => {
+  try {
+    const response = await api.put('/user/update', data);
+    return response;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to update user information');
+  }
+};
+
+// ====================== DEVICE ======================
+export const createDevice = async (data, apiKey) => {
+  try {
+    const response = await api.post('/device/create', data, {
+      headers: { 'x-api-key': apiKey }
+    });
+    return response;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to create device');
+  }
+};
+
 export const linkDevice = async (data) => {
   try {
     const response = await api.post('/device/link', data);
@@ -129,42 +159,72 @@ export const getDevice = async (deviceId) => {
   }
 };
 
-export const startTrigger = async (data, apiKey) => {
+export const updateEmergencyContacts = async (deviceId, contacts) => {
   try {
-    const response = await api.post('/device/trigger/start', data, {
-      headers: { 'x-api-key': apiKey },
-    });
-    return response;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Failed to start trigger');
-  }
-};
-
-export const updateEmergencyContacts = async (data) => {
-  try {
-    const response = await api.put('/device/emergency-contacts', data);
+    const response = await api.put(`/device/${deviceId}/emergency-contacts`, { contacts });
     return response;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to update emergency contacts');
   }
 };
 
-export const updateTriggerWords = async (data) => {
+export const updateTriggerWords = async (deviceId, words) => {
   try {
-    const response = await api.put('/device/trigger-words', data);
+    const response = await api.put(`/device/${deviceId}/trigger-words`, { words });
     return response;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to update trigger words');
   }
 };
 
-// Session endpoints
-export const stopTrigger = async (data) => {
+// ====================== SESSION ======================
+export const startTrigger = async (deviceId, initialLocation = null) => {
   try {
-    const response = await api.post('/sessions/stop', data);
+    const response = await api.post('/sessions/start', { 
+      deviceId, 
+      initialLocation 
+    });
     return response;
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'Failed to stop trigger');
+    throw new Error(error.response?.data?.message || 'Failed to start trigger session');
+  }
+};
+
+export const addCoordinates = async (deviceId, coordinates) => {
+  try {
+    const response = await api.post('/sessions/coordinates', {
+      deviceId,
+      ...coordinates
+    });
+    return response;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to add coordinates');
+  }
+};
+
+export const stopTrigger = async (deviceId, apiKey) => {
+  try {
+    const response = await api.post(
+      '/sessions/stop',
+      { deviceId },
+      {
+        headers: {
+          'x-api-key': apiKey,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to stop trigger session');
+  }
+};
+
+export const getSessionStatus = async (deviceId) => {
+  try {
+    const response = await api.get(`/sessions/status/${deviceId}`);
+    return response;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to get session status');
   }
 };
 
@@ -177,22 +237,64 @@ export const getSessionDetails = async (sessionId) => {
   }
 };
 
-export const getSessionHistory = async (deviceId) => {
+export const getSessionHistory = async (deviceId = null) => {
   try {
-    const response = await api.get('/sessions/history', {
-      params: { deviceId },
-    });
-    return response;
+    const params = deviceId ? { deviceId } : {};
+    const response = await api.get('/sessions/history', { params });
+    return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch session history');
   }
 };
 
-export const updateUserInfo = async (data) => {
+export const getCurrentLocation = async (deviceId) => {
   try {
-    const response = await api.put('/user/update', data);
+    const response = await api.get(`/sessions/current-location/${deviceId}`);
     return response;
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'Failed to update user information');
+    throw new Error(error.response?.data?.message || 'Failed to fetch current location');
   }
+};
+
+export const getActiveSessions = async () => {
+  try {
+    const response = await api.get('/sessions/active');
+    return response;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to fetch active sessions');
+  }
+};
+
+export default {
+  // Auth
+  login,
+  signupInitiate,
+  signupComplete,
+  forgotPassword,
+  resetPassword,
+  logout,
+  logoutAll,
+
+  // User
+  getProfile,
+  changePassword,
+  deleteAccount,
+  updateUserInfo,
+
+  // Device
+  createDevice,
+  linkDevice,
+  getDevice,
+  updateEmergencyContacts,
+  updateTriggerWords,
+
+  // Session
+  startTrigger,
+  addCoordinates,
+  stopTrigger,
+  getSessionStatus,
+  getSessionDetails,
+  getSessionHistory,
+  getCurrentLocation,
+  getActiveSessions
 };
