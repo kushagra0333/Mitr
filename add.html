@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MITR Device Trigger</title>
   <style>
-    /* --- styling remains unchanged --- */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #121212;
@@ -116,7 +115,17 @@
 
     <div class="form-group">
       <label for="deviceId">Device ID</label>
-      <input type="text" id="deviceId" placeholder="Enter device ID" />
+      <input type="text" id="deviceId" placeholder="Enter device ID" value="Device1" />
+    </div>
+
+    <div class="form-group">
+      <label for="latitude">Initial Latitude</label>
+      <input type="number" id="latitude" placeholder="Enter latitude" value="28.576973" step="0.000001" />
+    </div>
+
+    <div class="form-group">
+      <label for="longitude">Initial Longitude</label>
+      <input type="number" id="longitude" placeholder="Enter longitude" value="77.227622" step="0.000001" />
     </div>
 
     <div class="form-group">
@@ -139,6 +148,8 @@
 
   <script>
     const deviceIdInput = document.getElementById('deviceId');
+    const latitudeInput = document.getElementById('latitude');
+    const longitudeInput = document.getElementById('longitude');
     const intervalInput = document.getElementById('interval');
     const triggerBtn = document.getElementById('triggerBtn');
     const stopBtn = document.getElementById('stopBtn');
@@ -152,28 +163,11 @@
     let updateCount = 0;
     let sessionStartTime = null;
     let sessionLocations = [];
+    let currentLat = null;
+    let currentLon = null;
 
     const API_BASE_URL = 'http://localhost:5000/api';
     const API_KEY = 'mitr@2025';
-
-    function getCurrentLocation() {
-      return new Promise((resolve, reject) => {
-        if (!navigator.geolocation) {
-          reject('Geolocation not supported');
-        } else {
-          navigator.geolocation.getCurrentPosition(
-            (pos) => resolve({
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude,
-              accuracy: pos.coords.accuracy,
-              timestamp: new Date(pos.timestamp),
-            }),
-            (err) => reject(`Location error: ${err.message}`),
-            { enableHighAccuracy: true }
-          );
-        }
-      });
-    }
 
     async function sendLocationData(deviceId, location) {
       const response = await fetch(`${API_BASE_URL}/sessions/coordinates`, {
@@ -186,7 +180,6 @@
           deviceId,
           latitude: location.lat,
           longitude: location.lng,
-          accuracy: location.accuracy,
         }),
       });
 
@@ -194,17 +187,20 @@
       return await response.json();
     }
 
-    async function startTriggerSession(deviceId) {
+    async function startTriggerSession(deviceId, initialLocation) {
       const response = await fetch(`${API_BASE_URL}/sessions/start`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': API_KEY,
         },
-        body: JSON.stringify({ deviceId }),
+        body: JSON.stringify({
+          deviceId,
+          initialLocation: { latitude: initialLocation.lat, longitude: initialLocation.lng },
+        }),
       });
 
-      if (!response.ok) throw new Error(`Session start failed`);
+      if (!response.ok) throw new Error(`Session start failed: ${response.statusText}`);
       return await response.json();
     }
 
@@ -218,31 +214,37 @@
         body: JSON.stringify({ deviceId }),
       });
 
-      if (!response.ok) throw new Error(`Session stop failed`);
+      if (!response.ok) throw new Error(`Session stop failed: ${response.statusText}`);
       return await response.json();
     }
 
     async function triggerLocationUpdates() {
       const deviceId = deviceIdInput.value.trim();
       const intervalSeconds = parseInt(intervalInput.value);
+      const initialLat = parseFloat(latitudeInput.value);
+      const initialLon = parseFloat(longitudeInput.value);
 
-      if (!deviceId || isNaN(intervalSeconds)) {
-        alert('Enter valid Device ID and Interval');
+      if (!deviceId || isNaN(intervalSeconds) || isNaN(initialLat) || isNaN(initialLon)) {
+        alert('Enter valid Device ID, Latitude, Longitude, and Interval');
         return;
       }
 
       try {
         statusText.innerHTML = '<span class="loading"></span> Starting session...';
-        await startTriggerSession(deviceId);
+        await startTriggerSession(deviceId, { lat: initialLat, lng: initialLon });
 
         sessionStartTime = new Date();
         isTriggerActive = true;
         updateCount = 0;
         sessionLocations = [];
+        currentLat = initialLat;
+        currentLon = initialLon;
 
         triggerBtn.disabled = true;
         stopBtn.disabled = false;
         deviceIdInput.disabled = true;
+        latitudeInput.disabled = true;
+        longitudeInput.disabled = true;
         intervalInput.disabled = true;
 
         statusText.textContent = 'Active';
@@ -250,7 +252,13 @@
 
         const update = async () => {
           try {
-            const location = await getCurrentLocation();
+            // Random offset between ±0.0001 and ±0.0005 (~11–55 meters)
+            const latOffset = (Math.random() * 0.0004 + 0.0001) * (Math.random() < 0.5 ? 1 : -1);
+            const lonOffset = (Math.random() * 0.0004 + 0.0001) * (Math.random() < 0.5 ? 1 : -1);
+            currentLat += latOffset;
+            currentLon += lonOffset;
+
+            const location = { lat: currentLat, lng: currentLon };
             updateCount++;
             lastUpdate.textContent = `Last update: ${new Date().toLocaleTimeString()}`;
 
@@ -258,23 +266,20 @@
 
             sessionLocations.push({
               update: updateCount,
-              time: location.timestamp.toLocaleTimeString(),
+              time: new Date().toLocaleTimeString(),
               lat: location.lat.toFixed(6),
               lng: location.lng.toFixed(6),
-              acc: location.accuracy,
               serverRes: result,
             });
 
             locationData.textContent = sessionLocations.map(loc => 
-              `#${loc.update} at ${loc.time}
-- Lat: ${loc.lat}, Lng: ${loc.lng}, Acc: ${loc.acc}m
-- Server: ${JSON.stringify(loc.serverRes)}\n`).join('\n');
+              `#${loc.update} at ${loc.time}\n- Lat: ${loc.lat}, Lng: ${loc.lng}\n- Server: ${JSON.stringify(loc.serverRes)}\n`).join('\n');
           } catch (err) {
             locationData.textContent = `Update Error: ${err.message}\n\n${locationData.textContent}`;
           }
         };
 
-        update(); // first update immediately
+        update(); // First update immediately
         intervalId = setInterval(update, intervalSeconds * 1000);
 
       } catch (err) {
@@ -300,6 +305,8 @@
         triggerBtn.disabled = false;
         stopBtn.disabled = true;
         deviceIdInput.disabled = false;
+        latitudeInput.disabled = false;
+        longitudeInput.disabled = false;
         intervalInput.disabled = false;
       } catch (err) {
         alert('Failed to stop session: ' + err.message);
@@ -312,7 +319,11 @@
       triggerBtn.disabled = false;
       stopBtn.disabled = true;
       deviceIdInput.disabled = false;
+      latitudeInput.disabled = false;
+      longitudeInput.disabled = false;
       intervalInput.disabled = false;
+      statusText.textContent = 'Inactive';
+      statusDiv.className = 'status inactive';
     }
 
     triggerBtn.addEventListener('click', triggerLocationUpdates);

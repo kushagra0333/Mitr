@@ -13,53 +13,46 @@ const Footer = () => {
   return (
     <footer className="footer-hero text-light">
       <Container>
-        <Row className="gy-5 align-items-center">
-          {/* Logo and Brand */}
-          <Col md={4} className="text-center text-md-start">
+        <Row className="footer-content gy-4">
+          {/* Logo & Branding */}
+          <Col md={4} className="footer-section text-center text-md-start">
             <div className="footer-logo-wrapper">
               <img src={logo} alt="MITR" className="footer-hero-logo" />
-              <h3 className="footer-brand-title mt-3">MITR SOS</h3>
-              <p className="footer-brand-tagline">
-                Because help should be just a word away.
-              </p>
+              <h5 className="footer-brand-title">MITR SOS</h5>
+              <p className="footer-brand-tagline">Because help should be just a word away.</p>
             </div>
           </Col>
 
-          {/* Contact */}
-          {/* Contact */}
-<Col md={4} className="footer-contact text-center text-md-start">
-  <h5 className="footer-heading">Contact</h5>
-  <div className="footer-contact-item">
-    <FaEnvelope className="me-2 footer-icon" />
-    <span>support@mitr.com</span>
-  </div>
-  <div className="footer-contact-item">
-    <FaPhone className="me-2 footer-icon" />
-    <span>+91 98765 43210</span>
-  </div>
-  <div className="footer-contact-item">
-    <FaMapMarkerAlt className="me-2 footer-icon" />
-    <span>Pune, Maharashtra, India</span>
-  </div>
-</Col>
+          {/* Contact Info */}
+          <Col md={4} className="footer-section text-center text-md-start">
+            <h6 className="footer-heading">Contact</h6>
+            <div className="footer-contact-item">
+              <FaEnvelope className="footer-icon" />
+              <span>mitrsos2025@gmail.com</span>
+            </div>
+            <div className="footer-contact-item">
+              <FaPhone className="footer-icon" />
+              <span>+91 93100 22664</span>
+            </div>
+            <div className="footer-contact-item">
+              <FaMapMarkerAlt className="footer-icon" />
+              <span>Gijhore Sector-53 Noida, UP, India</span>
+            </div>
+          </Col>
 
-
-          {/* Links */}
-          <Col md={4} className="text-center text-md-start">
-            <h5 className="footer-heading">Quick Links</h5>
-            <ul className="footer-links list-unstyled">
+          {/* Navigation Links */}
+          <Col md={4} className="footer-section text-center text-md-start">
+            <h6 className="footer-heading">Quick Links</h6>
+            <ul className="footer-links">
               <li><Link to="/">Home</Link></li>
-              <li><Link to="/tracking">Live Tracking</Link></li>
-              <li><Link to="/device">Device</Link></li>
-              <li><Link to="/account">My Account</Link></li>
-              <li><Link to="/support">Support</Link></li>
+              <li><Link to="/dashboard">Dashboard</Link></li>
+              <li><Link to="/login">Login</Link></li>
+              <li><Link to="/signup">Signup</Link></li>
             </ul>
           </Col>
         </Row>
 
-        <hr className="footer-divider" />
-
-        <Row>
+        <Row className="mt-4">
           <Col className="text-center">
             <small className="footer-copy">
               © {new Date().getFullYear()} MITR SOS. All rights reserved.

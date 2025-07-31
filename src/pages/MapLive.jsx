@@ -25,18 +25,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-// Custom icon for history markers
-const historyIcon = new L.Icon({
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-  className: 'history-marker'
-});
-
 function DeviceDetails() {
   const { deviceId } = useParams();
   const navigate = useNavigate();
@@ -73,8 +61,6 @@ function DeviceDetails() {
         getSessionHistory(deviceId),
         getSessionStatus(deviceId),
       ]);
-
-      console.log('getSessionStatus response:', statusResponse.data);
 
       setDevice(deviceResponse.data.device);
       setHistory(historyResponse.sessions || []);
@@ -273,24 +259,32 @@ function DeviceDetails() {
                     <strong>Last Active:</strong>
                     {device.lastActive ? new Date(device.lastActive).toLocaleString() : 'Never'}
                   </ListGroup.Item>
-                  <ListGroup.Item>
-                    <strong>Locations Recorded:</strong> {sessionLocations.length}
-                  </ListGroup.Item>
                 </ListGroup>
-                <Button
-                  variant="primary"
-                  className="mt-3 neon-btn"
-                  onClick={fetchData}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <Spinner as="span" animation="border" size="sm" /> Refreshing...
-                    </>
-                  ) : (
-                    'Refresh Data'
+                <div className="mt-3 d-flex justify-content-between">
+                  <Button
+                    variant="primary"
+                    className="neon-btn"
+                    onClick={fetchData}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <Spinner as="span" animation="border" size="sm" /> Refreshing...
+                      </>
+                    ) : (
+                      'Refresh Data'
+                    )}
+                  </Button>
+                  {isTriggered && (
+                    <Button
+                      variant="info"
+                      className="neon-btn"
+                      onClick={() => navigate(`/map-live/${deviceId}`)}
+                    >
+                      View Live Map
+                    </Button>
                   )}
-                </Button>
+                </div>
               </Card.Body>
             </Card>
           </Col>
@@ -337,102 +331,118 @@ function DeviceDetails() {
           </Col>
         </Row>
 
-<Row className="mb-4">
-  <Col>
-    {isTriggered ? (
-      <Card className="glass-effect animate-slide-up">
-        <Card.Body>
-          <Card.Title className="text-gradient">Session Locations</Card.Title>
-          <Row>
-            <Col md={6}>
-              <ListGroup>
-                <ListGroup.Item>
-                  <strong>Current Session:</strong> {currentSessionId || 'None'}
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Latest Latitude:</strong>{' '}
-                  {currentLocation && !isNaN(currentLocation.latitude)
-                    ? currentLocation.latitude.toFixed(6)
-                    : 'N/A'}
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Latest Longitude:</strong>{' '}
-                  {currentLocation && !isNaN(currentLocation.longitude)
-                    ? currentLocation.longitude.toFixed(6)
-                    : 'N/A'}
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Last Updated:</strong>{' '}
-                  {currentLocation && currentLocation.timestamp
-                    ? new Date(currentLocation.timestamp).toLocaleString()
-                    : 'N/A'}
-                </ListGroup.Item>
-              </ListGroup>
-            </Col>
-            <Col md={6}>
-              <div className="map-container">
-                <MapContainer
-                  center={currentLocation ? [currentLocation.latitude, currentLocation.longitude] : [0, 0]}
-                  zoom={currentLocation ? 15 : 2}
-                  style={{ height: '100%', width: '100%' }}
-                  whenCreated={(map) => {
-                    mapRef.current = map;
-                    map.invalidateSize();
-                  }}
-                >
-                  <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                  />
-                  {currentLocation && (
-                    <Marker position={[currentLocation.latitude, currentLocation.longitude]}>
-                      <Popup>
-                        Latest Location<br />
-                        Lat: {currentLocation.latitude.toFixed(6)}<br />
-                        Lon: {currentLocation.longitude.toFixed(6)}<br />
-                        Time: {new Date(currentLocation.timestamp).toLocaleString()}
-                      </Popup>
-                    </Marker>
-                  )}
-                  {sessionLocations.map((location, index) => (
-                    <Marker
-                      key={index}
-                      position={[location.latitude, location.longitude]}
-                      icon={historyIcon}
-                    >
-                      <Popup>
-                        Location #{index + 1}<br />
-                        Lat: {location.latitude.toFixed(6)}<br />
-                        Lon: {location.longitude.toFixed(6)}<br />
-                        Time: {new Date(location.timestamp).toLocaleString()}
-                      </Popup>
-                    </Marker>
-                  ))}
-                  {sessionLocations.length > 1 && (
-                    <Polyline
-                      positions={sessionLocations.map(loc => [loc.latitude, loc.longitude])}
-                      color="#3388ff"
-                      weight={3}
-                    />
-                  )}
-                </MapContainer>
-              </div>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card>
-    ) : (
-      <Card className="glass-effect animate-slide-up">
-        <Card.Body className="text-center py-5">
-          <h4 className="text-gradient">Device Not Triggered</h4>
-          <p className="text-muted mt-3">
-            The device is currently not in triggered state. No location data available.
-          </p>
-        </Card.Body>
-      </Card>
-    )}
-  </Col>
-</Row>
+        <Row className="mb-4">
+          <Col>
+            <Card className="glass-effect animate-slide-up">
+              <Card.Body>
+                <Card.Title className="text-gradient">
+                  {isTriggered ? 'Current Session Locations' : 'Device Status'}
+                </Card.Title>
+                <Row>
+                  <Col md={6}>
+                    <ListGroup>
+                      <ListGroup.Item>
+                        <strong>Status:</strong>{' '}
+                        <span className={isTriggered ? 'text-danger' : 'text-success'}>
+                          {isTriggered ? 'Triggered' : 'Not Triggered'}
+                        </span>
+                      </ListGroup.Item>
+                      {isTriggered ? (
+                        <>
+                          <ListGroup.Item>
+                            <strong>Latest Latitude:</strong>{' '}
+                            {currentLocation && !isNaN(currentLocation.latitude)
+                              ? currentLocation.latitude.toFixed(6)
+                              : 'N/A'}
+                          </ListGroup.Item>
+                          <ListGroup.Item>
+                            <strong>Latest Longitude:</strong>{' '}
+                            {currentLocation && !isNaN(currentLocation.longitude)
+                              ? currentLocation.longitude.toFixed(6)
+                              : 'N/A'}
+                          </ListGroup.Item>
+                          <ListGroup.Item>
+                            <strong>Last Updated:</strong>{' '}
+                            {currentLocation && currentLocation.timestamp
+                              ? new Date(currentLocation.timestamp).toLocaleString()
+                              : 'N/A'}
+                          </ListGroup.Item>
+                        </>
+                      ) : (
+                        <ListGroup.Item>
+                          <span className="text-muted">Device is not currently triggered</span>
+                        </ListGroup.Item>
+                      )}
+                    </ListGroup>
+                  </Col>
+                  <Col md={6}>
+                    <div className="map-container">
+                      {isTriggered ? (
+                        <MapContainer
+                          center={currentLocation ? [currentLocation.latitude, currentLocation.longitude] : [0, 0]}
+                          zoom={currentLocation ? 15 : 2}
+                          style={{ height: '100%', width: '100%' }}
+                          whenCreated={(map) => {
+                            mapRef.current = map;
+                            map.invalidateSize();
+                          }}
+                        >
+                          <TileLayer
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                          />
+                          
+                          {/* Current location marker */}
+                          {currentLocation && (
+                            <Marker position={[currentLocation.latitude, currentLocation.longitude]}>
+                              <Popup>
+                                Latest Location<br />
+                                Latitude: {currentLocation.latitude.toFixed(6)}<br />
+                                Longitude: {currentLocation.longitude.toFixed(6)}<br />
+                                Time: {new Date(currentLocation.timestamp).toLocaleString()}
+                              </Popup>
+                            </Marker>
+                          )}
+                          
+                          {/* Session location markers */}
+                          {sessionLocations.map((location, index) => (
+                            <Marker
+                              key={index}
+                              position={[location.latitude, location.longitude]}
+                            >
+                              <Popup>
+                                Location #{index + 1}<br />
+                                Latitude: {location.latitude.toFixed(6)}<br />
+                                Longitude: {location.longitude.toFixed(6)}<br />
+                                Time: {new Date(location.timestamp).toLocaleString()}
+                              </Popup>
+                            </Marker>
+                          ))}
+                          
+                          {/* Path for the session */}
+                          {sessionLocations.length > 1 && (
+                            <Polyline
+                              positions={sessionLocations.map(loc => [loc.latitude, loc.longitude])}
+                              color="#3388ff"
+                              weight={3}
+                            />
+                          )}
+                        </MapContainer>
+                      ) : (
+                        <div className="d-flex justify-content-center align-items-center h-100">
+                          <Alert variant="info" className="text-center">
+                            Device is not currently triggered. No location data available.
+                          </Alert>
+                        </div>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+
         <Row>
           <Col>
             <Card className="glass-effect animate-slide-up">

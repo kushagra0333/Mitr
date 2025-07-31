@@ -2,116 +2,130 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  width: 100%;
+  height: 100%;
+  background: rgba(32, 0, 44, 0.8); /* Matches DeviceDetails dark theme */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(5px);
+  overflow: auto;
+  padding: 1rem;
+  margin-top: 40px;
 }
 
 .bluetooth-modal {
-  background: rgba(30, 30, 30, 0.95);
-  border: 1px solid rgba(187, 134, 252, 0.3);
+  background: rgba(255, 255, 255, 0.04); /* Glass effect */
+  border: 1px solid rgba(187, 134, 252, 0.2);
   border-radius: 16px;
-  width: 90%;
-  max-width: 600px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 0 30px rgba(187, 134, 252, 0.2);
-  animation: modalFadeIn 0.3s ease forwards;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 18px rgba(224, 64, 251, 0.3);
+  width: 100%;
+  max-width: 600px; /* Fixed width for desktop */
+  padding: 1.5rem;
+  animation: slideUp 0.5s ease forwards; /* Matches DeviceDetails animation */
+  position: relative;
 }
 
 .modal-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1.5rem;
 }
 
-.modal-header h3 {
+.modal-header h3.gradient-text {
+  background: linear-gradient(to right, #bb86fc, #e040fb); /* Matches DeviceDetails */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin: 0;
+  font-size: 1.8rem;
 }
 
 .close-button {
   background: none;
   border: none;
-  color: #fff;
+  color: #d0d0d0;
   font-size: 1.5rem;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color 0.3s ease;
 }
 
 .close-button:hover {
-  color: #bb86fc;
+  color: #ff4dda; /* Matches error text color */
 }
 
 .modal-body {
-  padding: 1.5rem;
+  max-height: 60vh; /* Limit height for scrollable content */
   overflow-y: auto;
-  flex-grow: 1;
+  padding: 0 0.5rem;
 }
 
 .error-message {
-  background: rgba(255, 0, 0, 0.2);
-  border: 1px solid rgba(255, 0, 0, 0.3);
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  color: #ff6b6b;
+  color: #ff4dda; /* Matches DeviceDetails error color */
+  background: rgba(255, 77, 218, 0.1);
+  padding: 0.75rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
 }
 
 .refresh-button {
-  background: rgba(187, 134, 252, 0.1);
-  color: #bb86fc;
-  border: 1px solid rgba(187, 134, 252, 0.3);
-  padding: 0.8rem 1.5rem;
+  background-color: #bb86fc; /* Matches neon-btn */
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(187, 134, 252, 0.6);
+  width: 100%;
   margin-bottom: 1.5rem;
 }
 
 .refresh-button:hover {
-  background: rgba(187, 134, 252, 0.2);
-  border-color: rgba(187, 134, 252, 0.5);
+  background-color: #e040fb;
+  box-shadow: 0 0 15px rgba(224, 64, 251, 0.8);
+  transform: translateY(-2px);
 }
 
 .devices-list {
-  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .device-item {
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(187, 134, 252, 0.2);
   border-radius: 8px;
-  margin-bottom: 0.5rem;
+  padding: 0.75rem;
+  color: #d0d0d0;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border-left: 3px solid transparent;
-}
-
-.device-item:hover {
-  background: rgba(255, 255, 255, 0.07);
+  transition: all 0.3s ease;
 }
 
 .device-item.selected {
-  background: rgba(187, 134, 252, 0.1);
-  border-left: 3px solid #bb86fc;
+  background: rgba(187, 134, 252, 0.3);
+  border-color: #bb86fc;
+  box-shadow: 0 0 10px rgba(187, 134, 252, 0.5);
+}
+
+.device-item:hover {
+  background: rgba(187, 134, 252, 0.2);
+  transform: translateY(-2px);
 }
 
 .form-section {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-section h4 {
+  color: #d0d0d0;
+  font-size: 1.2rem;
   margin-bottom: 1rem;
-  color: #bb86fc;
 }
 
 .input-group {
@@ -121,36 +135,40 @@
 }
 
 .input-group input {
-  flex-grow: 1;
-  padding: 0.8rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(187, 134, 252, 0.2);
   border-radius: 8px;
-  color: #fff;
-  font-size: 1rem;
-  transition: all 0.3s;
+  padding: 0.75rem;
+  color: #d0d0d0;
+  flex: 1;
+  font-size: 0.9rem;
 }
 
 .input-group input:focus {
   outline: none;
   border-color: #bb86fc;
-  box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.3);
+  box-shadow: 0 0 8px rgba(187, 134, 252, 0.4);
+}
+
+.input-group input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .add-button {
-  background: rgba(3, 218, 198, 0.1);
-  color: #03dac6;
-  border: 1px solid rgba(3, 218, 198, 0.3);
-  padding: 0 1.5rem;
+  background-color: #bb86fc; /* Matches neon-btn */
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(187, 134, 252, 0.6);
 }
 
 .add-button:hover {
-  background: rgba(3, 218, 198, 0.2);
-  border-color: rgba(3, 218, 198, 0.5);
+  background-color: #e040fb;
+  box-shadow: 0 0 15px rgba(224, 64, 251, 0.8);
+  transform: translateY(-2px);
 }
 
 .contacts-list, .trigger-words-list {
@@ -163,85 +181,128 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.8rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(187, 134, 252, 0.2);
   border-radius: 8px;
-  border-left: 3px solid rgba(187, 134, 252, 0.5);
+  padding: 0.75rem;
+  color: #d0d0d0;
 }
 
 .remove-button {
-  background: rgba(255, 107, 107, 0.1);
-  color: #ff6b6b;
-  border: 1px solid rgba(255, 107, 107, 0.3);
-  padding: 0.3rem 0.8rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  cursor: pointer;
+  background: none;
+  border: 1px solid #ff4dda;
+  color: #ff4dda;
+  padding: 0.25rem 0.75rem;
+  border-radius: 5px;
+  font-size: 0.85rem;
   transition: all 0.3s ease;
 }
 
 .remove-button:hover {
-  background: rgba(255, 107, 107, 0.2);
-  border-color: rgba(255, 107, 107, 0.5);
+  background: #ff4dda;
+  color: white;
+  box-shadow: 0 0 8px rgba(255, 77, 218, 0.6);
 }
 
 .modal-footer {
-  padding: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.primary-button {
+  background-color: #bb86fc; /* Matches neon-btn */
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(187, 134, 252, 0.6);
+}
+
+.primary-button:hover {
+  background-color: #e040fb;
+  box-shadow: 0 0 15px rgba(224, 64, 251, 0.8);
+  transform: translateY(-2px);
 }
 
 .secondary-button {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 0.8rem 1.5rem;
+  background: none;
+  border: 1px solid #bb86fc;
+  color: #bb86fc;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .secondary-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-.primary-button {
-  background: linear-gradient(135deg, #bb86fc 0%, #3700b3 100%);
-  color: white;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.primary-button:hover {
+  background: rgba(187, 134, 252, 0.2);
+  box-shadow: 0 0 8px rgba(187, 134, 252, 0.4);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(187, 134, 252, 0.4);
 }
 
-/* Animations */
-@keyframes modalFadeIn {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
+/* Responsive Design */
+@media (max-width: 768px) {
+  .bluetooth-modal {
+    max-width: 90%;
   }
+
+  .modal-header h3 {
+    font-size: 1.5rem;
+  }
+
+  .input-group {
+    flex-direction: column;
+  }
+
+  .input-group input {
+    width: 100%;
+  }
+
+  .add-button, .refresh-button, .primary-button, .secondary-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .bluetooth-modal {
+    max-width: 95%;
+    padding: 1rem;
+  }
+
+  .modal-header h3 {
+    font-size: 1.3rem;
+  }
+
+  .input-group input {
+    font-size: 0.85rem;
+  }
+
+  .add-button, .refresh-button, .primary-button, .secondary-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .contact-item, .trigger-word-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .remove-button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Reuse animation from DeviceDetails */
+@keyframes slideUp {
   to {
     transform: translateY(0);
     opacity: 1;
   }
-}
-
-/* Gradient Text */
-.gradient-text {
-  background: linear-gradient(90deg, #bb86fc, #03dac6);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  display: inline-block;
 }

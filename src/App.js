@@ -13,6 +13,7 @@ import './App.css';
 import CustomCursor from './components/CustomCursor';
 import ForgotPassword from './pages/ForgotPassword';
 import Footer from './components/footer/footer';
+import MapLive from './pages/MapLive';
 const App = () => {
   return (
     <Router>
@@ -28,6 +29,7 @@ const App = () => {
         <Route path="/history" element={<TriggerHistory />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/map-live/:deviceId" element={<MapLive />} />
       </Routes>
       <Footer />
     </Router>
