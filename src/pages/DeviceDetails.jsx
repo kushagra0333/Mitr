@@ -5,10 +5,8 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Container, Card, Button, ListGroup, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import BluetoothModal from '../components/BluetoothModal';
-import { getSessionDetails,getDevice, getSessionHistory, getSessionStatus, stopTrigger, updateEmergencyContacts, updateTriggerWords } from '../services/api';
+import { getSessionDetails, getDevice, getSessionHistory, getSessionStatus, stopTrigger, updateEmergencyContacts, updateTriggerWords } from '../services/api.js';
 import BluetoothService from '../services/bluetooth';
-
-import { sendDataToDevice } from '../services/bluetooth';
 import './DeviceDetails.css';
 
 // Fix for Leaflet default marker icons
@@ -43,10 +41,10 @@ function DeviceDetails() {
   const [isTriggered, setIsTriggered] = useState(false);
   const [currentLocation, setCurrentLocation] = useState(null);
   const [showBluetoothModal, setShowBluetoothModal] = useState(false);
-  const [selectedDevice, setSelectedDevice] = useState(null);
   const [currentSessionId, setCurrentSessionId] = useState(null);
   const [sessionLocations, setSessionLocations] = useState([]);
   const apiKey = 'mitr@2025';
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
   const fetchSessionDetails = async (sessionId) => {
     try {
@@ -68,7 +66,8 @@ function DeviceDetails() {
         getSessionStatus(deviceId),
       ]);
 
-      console.log('getSessionStatus response:', statusResponse.data);
+      console.log('Device response:', deviceResponse.data);
+      console.log('Status response:', statusResponse.data);
 
       setDevice(deviceResponse.data.device);
       setHistory(historyResponse.sessions || []);
@@ -76,17 +75,14 @@ function DeviceDetails() {
       const isActive = statusResponse.data.isActive || false;
       setIsTriggered(isActive);
 
-      // Get current session ID from status response if active
       const sessionId = isActive ? statusResponse.data.sessionId : null;
       setCurrentSessionId(sessionId);
 
-      // If there's an active session, fetch its details
       if (sessionId) {
         const session = await fetchSessionDetails(sessionId);
         if (session) {
           setSessionLocations(session.coordinates || []);
           
-          // Set current location to the last coordinate if available
           if (session.coordinates && session.coordinates.length > 0) {
             const lastCoord = session.coordinates[session.coordinates.length - 1];
             setCurrentLocation({
@@ -101,7 +97,6 @@ function DeviceDetails() {
         setSessionLocations([]);
       }
 
-      // Handle single location update from status response
       if (
         isActive &&
         statusResponse.data.lastUpdate &&
@@ -134,13 +129,11 @@ function DeviceDetails() {
 
   useEffect(() => {
     if (mapRef.current) {
-      // Fit the map to show all markers if we have locations
       if (sessionLocations.length > 0) {
         const bounds = L.latLngBounds(
           sessionLocations.map(loc => [loc.latitude, loc.longitude])
         );
         
-        // Include current location if available
         if (currentLocation) {
           bounds.extend([currentLocation.latitude, currentLocation.longitude]);
         }
@@ -149,7 +142,7 @@ function DeviceDetails() {
       } else if (currentLocation) {
         mapRef.current.setView([currentLocation.latitude, currentLocation.longitude], 15);
       } else {
-        mapRef.current.setView([0, 0], 2); // Default view
+        mapRef.current.setView([0, 0], 2);
       }
       mapRef.current.invalidateSize();
     }
@@ -168,32 +161,43 @@ function DeviceDetails() {
       setIsStopping(false);
     }
   };
-const handleUpdateSettings = async ({ emergencyContacts, triggerWords, deviceConnection }) => {
-  try {
-    setError('');
-    
-    // Update backend first
-    await Promise.all([
-      updateEmergencyContacts(deviceId, emergencyContacts),
-      updateTriggerWords(deviceId, triggerWords)
-    ]);
 
-    // Then send to Bluetooth device if connected
-    if (deviceConnection) {
+  const handleUpdateSettings = async ({ emergencyContacts, triggerWords, deviceConnection, textContent }) => {
+    try {
+      setError('');
+      
+      // Update backend
+      const [contactsResponse, wordsResponse] = await Promise.all([
+        updateEmergencyContacts(deviceId, emergencyContacts),
+        updateTriggerWords(deviceId, triggerWords)
+      ]);
+      console.log('Backend updated:', { contactsResponse, wordsResponse });
+
+      // Update emergency.txt on server
       const payload = {
         emergency_contact: emergencyContacts.map(c => c.phone),
         trigger_word: triggerWords
       };
-      await BluetoothService.sendSettings(deviceConnection, payload);
-    }
+      await fetch(`${API_URL}/update-emergency-data`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-    await fetchData(); // Refresh device data
-    setShowBluetoothModal(false);
-  } catch (err) {
-    setError(err.message || 'Failed to update settings');
-    console.error('Update error:', err);
-  }
-};
+      // Send to Bluetooth device if connected
+      if (deviceConnection) {
+        await BluetoothService.sendSettingsWithRetry(deviceConnection, textContent, 3);
+        console.log('Sent emergency.txt to Bluetooth device:', textContent);
+      }
+
+      // Refresh device data
+      await fetchData();
+    } catch (err) {
+      setError(err.message || 'Failed to update settings');
+      console.error('Update error:', err);
+    }
+  };
+
   if (loading) {
     return (
       <div className="device-details-background">
@@ -299,7 +303,7 @@ const handleUpdateSettings = async ({ emergencyContacts, triggerWords, deviceCon
                   <ListGroup className="mb-3">
                     {device.emergencyContacts.map((contact, index) => (
                       <ListGroup.Item key={index}>
-                        <strong>{contact.name}</strong>: {contact.phone}
+                        <strong>{contact.name || 'Contact ' + (index + 1)}</strong>: {contact.phone}
                       </ListGroup.Item>
                     ))}
                   </ListGroup>
@@ -332,102 +336,103 @@ const handleUpdateSettings = async ({ emergencyContacts, triggerWords, deviceCon
           </Col>
         </Row>
 
-<Row className="mb-4">
-  <Col>
-    {isTriggered ? (
-      <Card className="glass-effect animate-slide-up">
-        <Card.Body>
-          <Card.Title className="text-gradient">Session Locations</Card.Title>
-          <Row>
-            <Col md={6}>
-              <ListGroup>
-                <ListGroup.Item>
-                  <strong>Current Session:</strong> {currentSessionId || 'None'}
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Latest Latitude:</strong>{' '}
-                  {currentLocation && !isNaN(currentLocation.latitude)
-                    ? currentLocation.latitude.toFixed(6)
-                    : 'N/A'}
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Latest Longitude:</strong>{' '}
-                  {currentLocation && !isNaN(currentLocation.longitude)
-                    ? currentLocation.longitude.toFixed(6)
-                    : 'N/A'}
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Last Updated:</strong>{' '}
-                  {currentLocation && currentLocation.timestamp
-                    ? new Date(currentLocation.timestamp).toLocaleString()
-                    : 'N/A'}
-                </ListGroup.Item>
-              </ListGroup>
-            </Col>
-            <Col md={6}>
-              <div className="map-container">
-                <MapContainer
-                  center={currentLocation ? [currentLocation.latitude, currentLocation.longitude] : [0, 0]}
-                  zoom={currentLocation ? 15 : 2}
-                  style={{ height: '100%', width: '100%' }}
-                  whenCreated={(map) => {
-                    mapRef.current = map;
-                    map.invalidateSize();
-                  }}
-                >
-                  <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                  />
-                  {currentLocation && (
-                    <Marker position={[currentLocation.latitude, currentLocation.longitude]}>
-                      <Popup>
-                        Latest Location<br />
-                        Lat: {currentLocation.latitude.toFixed(6)}<br />
-                        Lon: {currentLocation.longitude.toFixed(6)}<br />
-                        Time: {new Date(currentLocation.timestamp).toLocaleString()}
-                      </Popup>
-                    </Marker>
-                  )}
-                  {sessionLocations.map((location, index) => (
-                    <Marker
-                      key={index}
-                      position={[location.latitude, location.longitude]}
-                      icon={historyIcon}
-                    >
-                      <Popup>
-                        Location #{index + 1}<br />
-                        Lat: {location.latitude.toFixed(6)}<br />
-                        Lon: {location.longitude.toFixed(6)}<br />
-                        Time: {new Date(location.timestamp).toLocaleString()}
-                      </Popup>
-                    </Marker>
-                  ))}
-                  {sessionLocations.length > 1 && (
-                    <Polyline
-                      positions={sessionLocations.map(loc => [loc.latitude, loc.longitude])}
-                      color="#3388ff"
-                      weight={3}
-                    />
-                  )}
-                </MapContainer>
-              </div>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card>
-    ) : (
-      <Card className="glass-effect animate-slide-up">
-        <Card.Body className="text-center py-5">
-          <h4 className="text-gradient">Device Not Triggered</h4>
-          <p className="text-muted mt-3">
-            The device is currently not in triggered state. No location data available.
-          </p>
-        </Card.Body>
-      </Card>
-    )}
-  </Col>
-</Row>
+        <Row className="mb-4">
+          <Col>
+            {isTriggered ? (
+              <Card className="glass-effect animate-slide-up">
+                <Card.Body>
+                  <Card.Title className="text-gradient">Session Locations</Card.Title>
+                  <Row>
+                    <Col md={6}>
+                      <ListGroup>
+                        <ListGroup.Item>
+                          <strong>Current Session:</strong> {currentSessionId || 'None'}
+                        </ListGroup.Item>
+                        <ListGroup.Item>
+                          <strong>Latest Latitude:</strong>{' '}
+                          {currentLocation && !isNaN(currentLocation.latitude)
+                            ? currentLocation.latitude.toFixed(6)
+                            : 'N/A'}
+                        </ListGroup.Item>
+                        <ListGroup.Item>
+                          <strong>Latest Longitude:</strong>{' '}
+                          {currentLocation && !isNaN(currentLocation.longitude)
+                            ? currentLocation.longitude.toFixed(6)
+                            : 'N/A'}
+                        </ListGroup.Item>
+                        <ListGroup.Item>
+                          <strong>Last Updated:</strong>{' '}
+                          {currentLocation && currentLocation.timestamp
+                            ? new Date(currentLocation.timestamp).toLocaleString()
+                            : 'N/A'}
+                        </ListGroup.Item>
+                      </ListGroup>
+                    </Col>
+                    <Col md={6}>
+                      <div className="map-container">
+                        <MapContainer
+                          center={currentLocation ? [currentLocation.latitude, currentLocation.longitude] : [0, 0]}
+                          zoom={currentLocation ? 15 : 2}
+                          style={{ height: '100%', width: '100%' }}
+                          whenCreated={(map) => {
+                            mapRef.current = map;
+                            map.invalidateSize();
+                          }}
+                        >
+                          <TileLayer
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                          />
+                          {currentLocation && (
+                            <Marker position={[currentLocation.latitude, currentLocation.longitude]}>
+                              <Popup>
+                                Latest Location<br />
+                                Lat: {currentLocation.latitude.toFixed(6)}<br />
+                                Lon: {currentLocation.longitude.toFixed(6)}<br />
+                                Time: {new Date(currentLocation.timestamp).toLocaleString()}
+                              </Popup>
+                            </Marker>
+                          )}
+                          {sessionLocations.map((location, index) => (
+                            <Marker
+                              key={index}
+                              position={[location.latitude, location.longitude]}
+                              icon={historyIcon}
+                            >
+                              <Popup>
+                                Location #{index + 1}<br />
+                                Lat: {location.latitude.toFixed(6)}<br />
+                                Lon: {location.longitude.toFixed(6)}<br />
+                                Time: {new Date(location.timestamp).toLocaleString()}
+                              </Popup>
+                            </Marker>
+                          ))}
+                          {sessionLocations.length > 1 && (
+                            <Polyline
+                              positions={sessionLocations.map(loc => [loc.latitude, loc.longitude])}
+                              color="#3388ff"
+                              weight={3}
+                            />
+                          )}
+                        </MapContainer>
+                      </div>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            ) : (
+              <Card className="glass-effect animate-slide-up">
+                <Card.Body className="text-center py-5">
+                  <h4 className="text-gradient">Device Not Triggered</h4>
+                  <p className="text-muted mt-3">
+                    The device is currently not in triggered state. No location data available.
+                  </p>
+                </Card.Body>
+              </Card>
+            )}
+          </Col>
+        </Row>
+
         <Row>
           <Col>
             <Card className="glass-effect animate-slide-up">
@@ -476,10 +481,10 @@ const handleUpdateSettings = async ({ emergencyContacts, triggerWords, deviceCon
           onHide={() => setShowBluetoothModal(false)}
           onSubmit={handleUpdateSettings}
           initialData={{
+            deviceId: device.deviceId,
             emergencyContacts: device.emergencyContacts || [],
             triggerWords: device.triggerWords || []
           }}
-          onDeviceSelect={setSelectedDevice}
         />
       </Container>
     </div>

@@ -1,308 +1,222 @@
-.bluetooth-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(32, 0, 44, 0.8); /* Matches DeviceDetails dark theme */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  overflow: auto;
-  padding: 1rem;
-  margin-top: 40px;
-}
-
-.bluetooth-modal {
-  background: rgba(255, 255, 255, 0.04); /* Glass effect */
+/* Modal background with radial gradient similar to .device-details-background */
+.modal-content {
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(187, 134, 252, 0.2);
   border-radius: 16px;
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 0 18px rgba(224, 64, 251, 0.3);
-  width: 100%;
-  max-width: 600px; /* Fixed width for desktop */
-  padding: 1.5rem;
-  animation: slideUp 0.5s ease forwards; /* Matches DeviceDetails animation */
+  color: #d0d0d0;
   position: relative;
+  z-index: 2;
+  animation: slideUp 1s ease forwards;
 }
 
+/* Modal overlay glow effect similar to .device-details-overlay-glow */
+.modal-backdrop {
+  background: radial-gradient(circle at 50% 50%, #350047, transparent 70%);
+  opacity: 0.5;
+  animation: pulseGlow 6s ease-in-out infinite;
+}
+
+/* Modal header */
 .modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(187, 134, 252, 0.2);
+  background: transparent;
+  padding: 1.5rem;
 }
 
-.modal-header h3.gradient-text {
-  background: linear-gradient(to right, #bb86fc, #e040fb); /* Matches DeviceDetails */
+.modal-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  background: linear-gradient(to right, #bb86fc, #e040fb);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin: 0;
-  font-size: 1.8rem;
 }
 
-.close-button {
-  background: none;
-  border: none;
-  color: #d0d0d0;
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.close-button:hover {
-  color: #ff4dda; /* Matches error text color */
-}
-
+/* Modal body */
 .modal-body {
-  max-height: 60vh; /* Limit height for scrollable content */
-  overflow-y: auto;
-  padding: 0 0.5rem;
+  padding: 1.5rem;
 }
 
-.error-message {
-  color: #ff4dda; /* Matches DeviceDetails error color */
+/* Neon button styles matching .neon-btn */
+.neon-btn {
+  background-color: #bb86fc;
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(187, 134, 252, 0.6);
+}
+
+.neon-btn:hover {
+  background-color: #e040fb;
+  box-shadow: 0 0 15px rgba(224, 64, 251, 0.8), 0 0 30px rgba(187, 134, 252, 0.5);
+  transform: translateY(-2px);
+}
+
+.neon-btn:disabled {
+  background-color: #666;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Form inputs */
+.form-control {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(187, 134, 252, 0.2);
+  color: #d0d0d0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #bb86fc;
+  box-shadow: 0 0 8px rgba(224, 64, 251, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.form-label {
+  color: #d0d0d0;
+  font-weight: 500;
+}
+
+/* List group for emergency contacts */
+.list-group-item {
+  background: transparent;
+  border: 1px solid rgba(187, 134, 252, 0.2);
+  color: #d0d0d0;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+  background: rgba(187, 134, 252, 0.1);
+}
+
+/* Trigger word badges */
+.badge.bg-primary {
+  background: linear-gradient(to right, #bb86fc, #e040fb) !important;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  box-shadow: 0 0 8px rgba(224, 64, 251, 0.4);
+}
+
+/* Alert styles */
+.alert {
+  border-radius: 8px;
+  border: 1px solid rgba(187, 134, 252, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  color: #d0d0d0;
+}
+
+.alert-danger {
   background: rgba(255, 77, 218, 0.1);
-  padding: 0.75rem;
-  border-radius: 5px;
-  margin-bottom: 1rem;
-  text-align: center;
-  font-size: 0.9rem;
-}
-
-.refresh-button {
-  background-color: #bb86fc; /* Matches neon-btn */
-  border: none;
-  color: white;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 10px rgba(187, 134, 252, 0.6);
-  width: 100%;
-  margin-bottom: 1.5rem;
-}
-
-.refresh-button:hover {
-  background-color: #e040fb;
-  box-shadow: 0 0 15px rgba(224, 64, 251, 0.8);
-  transform: translateY(-2px);
-}
-
-.devices-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.device-item {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(187, 134, 252, 0.2);
-  border-radius: 8px;
-  padding: 0.75rem;
-  color: #d0d0d0;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.device-item.selected {
-  background: rgba(187, 134, 252, 0.3);
-  border-color: #bb86fc;
-  box-shadow: 0 0 10px rgba(187, 134, 252, 0.5);
-}
-
-.device-item:hover {
-  background: rgba(187, 134, 252, 0.2);
-  transform: translateY(-2px);
-}
-
-.form-section {
-  margin-bottom: 1.5rem;
-}
-
-.form-section h4 {
-  color: #d0d0d0;
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-}
-
-.input-group {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.input-group input {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(187, 134, 252, 0.2);
-  border-radius: 8px;
-  padding: 0.75rem;
-  color: #d0d0d0;
-  flex: 1;
-  font-size: 0.9rem;
-}
-
-.input-group input:focus {
-  outline: none;
-  border-color: #bb86fc;
-  box-shadow: 0 0 8px rgba(187, 134, 252, 0.4);
-}
-
-.input-group input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.add-button {
-  background-color: #bb86fc; /* Matches neon-btn */
-  border: none;
-  color: white;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 10px rgba(187, 134, 252, 0.6);
-}
-
-.add-button:hover {
-  background-color: #e040fb;
-  box-shadow: 0 0 15px rgba(224, 64, 251, 0.8);
-  transform: translateY(-2px);
-}
-
-.contacts-list, .trigger-words-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.contact-item, .trigger-word-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(187, 134, 252, 0.2);
-  border-radius: 8px;
-  padding: 0.75rem;
-  color: #d0d0d0;
-}
-
-.remove-button {
-  background: none;
-  border: 1px solid #ff4dda;
   color: #ff4dda;
-  padding: 0.25rem 0.75rem;
-  border-radius: 5px;
-  font-size: 0.85rem;
-  transition: all 0.3s ease;
 }
 
-.remove-button:hover {
-  background: #ff4dda;
-  color: white;
-  box-shadow: 0 0 8px rgba(255, 77, 218, 0.6);
+.alert-success {
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
 }
 
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1.5rem;
+.alert-warning {
+  background: rgba(255, 204, 0, 0.1);
+  color: #ffcc00;
 }
 
-.primary-button {
-  background-color: #bb86fc; /* Matches neon-btn */
-  border: none;
-  color: white;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 10px rgba(187, 134, 252, 0.6);
+/* Spinner */
+.spinner-border {
+  border-color: #bb86fc;
+  border-right-color: transparent;
 }
 
-.primary-button:hover {
-  background-color: #e040fb;
-  box-shadow: 0 0 15px rgba(224, 64, 251, 0.8);
-  transform: translateY(-2px);
-}
-
-.secondary-button {
-  background: none;
-  border: 1px solid #bb86fc;
-  color: #bb86fc;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.secondary-button:hover {
-  background: rgba(187, 134, 252, 0.2);
-  box-shadow: 0 0 8px rgba(187, 134, 252, 0.4);
-  transform: translateY(-2px);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .bluetooth-modal {
-    max-width: 90%;
-  }
-
-  .modal-header h3 {
-    font-size: 1.5rem;
-  }
-
-  .input-group {
-    flex-direction: column;
-  }
-
-  .input-group input {
-    width: 100%;
-  }
-
-  .add-button, .refresh-button, .primary-button, .secondary-button {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .bluetooth-modal {
-    max-width: 95%;
-    padding: 1rem;
-  }
-
-  .modal-header h3 {
-    font-size: 1.3rem;
-  }
-
-  .input-group input {
-    font-size: 0.85rem;
-  }
-
-  .add-button, .refresh-button, .primary-button, .secondary-button {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-  }
-
-  .contact-item, .trigger-word-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .remove-button {
-    width: 100%;
-    text-align: center;
-  }
-}
-
-/* Reuse animation from DeviceDetails */
+/* Animations matching DeviceDetails.css */
 @keyframes slideUp {
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+}
+
+/* Responsive design matching DeviceDetails.css */
+@media (max-width: 768px) {
+  .modal-content {
+    border-radius: 12px;
+    padding: 1rem;
+  }
+
+  .modal-title {
+    font-size: 1.3rem;
+  }
+
+  .neon-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  .form-control {
+    font-size: 0.9rem;
+  }
+
+  .list-group-item {
+    font-size: 0.9rem;
+  }
+
+  .badge.bg-primary {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    border-radius: 10px;
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+  }
+
+  .neon-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .form-control {
+    font-size: 0.85rem;
+  }
+
+  .list-group-item {
+    font-size: 0.85rem;
+  }
+
+  .badge.bg-primary {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.7rem;
   }
 }

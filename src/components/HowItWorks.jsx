@@ -1,10 +1,11 @@
 import React from "react";
 import {
   FaShoppingCart,
-  FaUserShield,
-  FaRunning,
-  FaBullhorn,
-  FaLock,
+  FaUser,
+  FaMobileAlt,
+  FaInfoCircle,
+  FaHistory,
+  FaMapMarkedAlt,
   FaArrowDown,
 } from "react-icons/fa";
 import "./HowItWorks.css";
@@ -12,36 +13,35 @@ import "./HowItWorks.css";
 const steps = [
   {
     icon: <FaShoppingCart className="step-icon" />,
-    title: "Purchase & Setup",
-    description:
-      "Buy the MITR device from our website. Use the QR code to connect via the app or website, and register with Gmail.",
+    title: "Buy Device",
+    description: "Purchase MITR from our website or app.",
   },
   {
-    icon: <FaUserShield className="step-icon" />,
-    title: "Add Emergency Contacts",
-    description:
-      "Add trusted contacts. Set custom trigger words or phrases for the SOS feature through the app or website.",
+    icon: <FaUser className="step-icon" />,
+    title: "Login / Signup",
+    description: "Create an account or log in using Gmail.",
   },
   {
-    icon: <FaRunning className="step-icon" />,
-    title: "Daily Usage",
-    description:
-      "Carry your keychain-sized MITR device. Runs silently, phone-free, and charges wirelessly.",
+    icon: <FaMobileAlt className="step-icon" />,
+    title: "Add Device",
+    description: "Connect your MITR device to the dashboard.",
   },
   {
-    icon: <FaBullhorn className="step-icon" />,
-    title: "In Case of Emergency",
-    description:
-      "Say your trigger word. Instantly sends SMS, WhatsApp & live location to your emergency contacts.",
+    icon: <FaInfoCircle className="step-icon" />,
+    title: "View Device Details",
+    description: "Click the device card to see current status and settings.",
   },
   {
-    icon: <FaLock className="step-icon" />,
-    title: "Post-Emergency Security",
-    description:
-      "Only the owner can reset or disable tracking with password-protected access.",
+    icon: <FaHistory className="step-icon" />,
+    title: "Trigger History",
+    description: "See a complete list of all SOS trigger events.",
+  },
+  {
+    icon: <FaMapMarkedAlt className="step-icon" />,
+    title: "Map Visualization",
+    description: "View triggered events with GPS trail on an interactive map.",
   },
 ];
-
 const HowItWorks = () => {
   return (
     <section className="howitworks-section">

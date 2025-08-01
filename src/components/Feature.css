@@ -1,3 +1,4 @@
+/* Section Background */
 .feature-section {
   background: radial-gradient(ellipse at top left, #23002e, #0e0e10);
   color: white;
@@ -43,12 +44,13 @@
   font-size: 1rem;
   max-width: 600px;
   margin: 0 auto;
+  line-height: 1.6;
 }
 
-/* Grid Layout */
+/* Grid Layout - Maximum 3 in a row */
 .feature-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 30px;
 }
 
@@ -56,10 +58,8 @@
 .feature-card {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);
-    border-top-left-radius: 70px;
-
-border-bottom-right-radius: 70px;
-
+  border-top-left-radius: 70px;
+  border-bottom-right-radius: 70px;
   padding: 30px 20px;
   text-align: center;
   transition: all 0.3s ease;
@@ -110,8 +110,18 @@ border-bottom-right-radius: 70px;
   }
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* Responsive Grid Layout */
+@media (max-width: 1024px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .feature-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
   .section-title {
     font-size: 2rem;
   }

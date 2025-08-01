@@ -1,3 +1,4 @@
+// KeyFeatures.jsx
 import React from 'react';
 import {
   FaMicrophoneAlt,
@@ -5,8 +6,9 @@ import {
   FaSms,
   FaBatteryFull,
   FaMobileAlt,
-  FaChargingStation,
-} from 'react-icons/fa';
+  FaBell,
+} from 'react-icons/fa'; // Changed FaChargingStation to FaBell for new icon
+
 import './Feature.css';
 
 const features = [
@@ -32,13 +34,13 @@ const features = [
   },
   {
     icon: <FaMobileAlt className="feature-icon" />,
-    title: "App-Controlled Setup",
-    description: "Full device control via app or website — manage contacts, triggers, and settings.",
+    title: "Web App Controlled Setup",
+    description: "Full device control via website — manage contacts, triggers, and settings.",
   },
   {
-    icon: <FaChargingStation className="feature-icon" />,
-    title: "Wireless Charging",
-    description: "Recharge with MagSafe or wireless pads — no cables needed.",
+    icon: <FaBell className="feature-icon" />,
+    title: "Emergency Hardware Button",
+    description: "Trigger SOS instantly with a dedicated physical button, even without voice.",
   },
 ];
 

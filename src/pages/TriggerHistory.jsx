@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Container, Card, Button, Table, Spinner, Alert, ListGroup } from 'react-bootstrap';
 import { getSessionHistory } from '../services/api';
 import './TriggerHistory.css';
+import { Fragment } from 'react';
 
 function TriggerHistory() {
   const [sessions, setSessions] = useState([]);
@@ -10,6 +10,7 @@ function TriggerHistory() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [expandedSession, setExpandedSession] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   const query = new URLSearchParams(location.search);
@@ -50,71 +51,75 @@ function TriggerHistory() {
     }
   };
 
+  const toggleExpand = (sessionId) => {
+    setExpandedSession(expandedSession === sessionId ? null : sessionId);
+  };
+
   if (loading) {
     return (
       <div className="trigger-history-background">
-        <Container className="trigger-history-container text-center py-5">
-          <Spinner animation="border" variant="primary" />
-          <p className="mt-3">Loading trigger history...</p>
-        </Container>
+        <div className="trigger-history-container text-center">
+          <div className="spinner"></div>
+          <p className="loading-text">Loading trigger history...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="trigger-history-background">
-      <div className="trigger-history-overlay-glow" />
-      <Container className="trigger-history-container py-5">
-        <Card className="glass-effect animate-slide-up">
-          <Card.Body>
-            <Card.Title className="text-gradient">Trigger History</Card.Title>
-            {deviceId && <Card.Subtitle className="mb-3">For Device: {deviceId}</Card.Subtitle>}
+      <div className="trigger-history-overlay-glow"></div>
+      <div className="trigger-history-container">
+        <div className="glass-card slide-up">
+          {deviceId && <h3 className=" text-gradient">Trigger History For {deviceId}</h3>}
 
-            {error && (
-              <Alert variant="danger" dismissible onClose={() => setError('')}>
-                {error}
-                <div className="mt-3">
-                  <Button variant="primary" className="neon-btn" onClick={() => navigate('/devices')}>
-                    Back to Devices
-                  </Button>
-                </div>
-              </Alert>
-            )}
+          {error && (
+            <div className="alert danger" onClick={() => setError('')}>
+              {error}
+              <div className="alert-actions">
+                <button className="glow-btn" onClick={() => navigate('/devices')}>
+                  Back to Devices
+                </button>
+              </div>
+            </div>
+          )}
 
-            {!error && sessions.length === 0 && (
-              <Alert variant="info">
-                No trigger sessions found for this device
-                <div className="mt-3">
-                  <Button variant="primary" className="neon-btn" onClick={() => navigate('/devices')}>
-                    Back to Devices
-                  </Button>
-                </div>
-              </Alert>
-            )}
+          {!error && sessions.length === 0 && (
+            <div className="alert info">
+              No trigger sessions found for this device
+              <div className="alert-actions">
+                <button className="glow-btn" onClick={() => navigate('/devices')}>
+                  Back to Devices
+                </button>
+              </div>
+            </div>
+          )}
 
-            {sessions.length > 0 && (
-              <>
-                <Table striped bordered hover variant="dark" responsive className="sessions-table">
-                  <thead>
-                    <tr>
-                      <th>Session ID</th>
-                      <th>Start Time</th>
-                      <th>End Time</th>
-                      <th>Duration</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sessions.map((session) => {
-                      const startTime = new Date(session.startTime);
-                      const endTime = session.endTime ? new Date(session.endTime) : null;
-                      const duration = endTime
-                        ? `${Math.round((endTime - startTime) / 60000)} minutes`
-                        : 'Ongoing';
+          {sessions.length > 0 && (
+            <>
+              <table className="sessions-table">
+                <thead>
+                  <tr>
+                    <th>Session ID</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sessions.map((session) => {
+                    const startTime = new Date(session.startTime);
+                    const endTime = session.endTime ? new Date(session.endTime) : null;
+                    const duration = endTime
+                      ? `${Math.round((endTime - startTime) / 60000)} minutes`
+                      : 'Ongoing';
+                    const isExpanded = expandedSession === session._id;
 
-                      return (
-                        <tr key={session._id}>
+                    return (
+                      <Fragment key={session._id}>
+                        <tr className="parent-row">
                           <td>{session._id.substring(0, 6)}...</td>
                           <td>{startTime.toLocaleString()}</td>
                           <td>{endTime ? endTime.toLocaleString() : 'Active'}</td>
@@ -122,90 +127,88 @@ function TriggerHistory() {
                           <td>
                             <span
                               className={`status-badge ${
-                                session.status === 'active' ? 'text-success' : 'text-danger'
+                                session.status === 'active' ? 'status-active' : 'status-ended'
                               }`}
                             >
                               {session.status.charAt(0).toUpperCase() + session.status.slice(1)}
                             </span>
                           </td>
                           <td>
-                            <Button
-                              variant="outline-primary"
-                              className="neon-btn"
+                            <button
+                              className="glow-btn"
                               onClick={() => navigate(`/map/${session._id}`)}
                             >
                               View Map
-                            </Button>
+                            </button>
+                            <button
+                              className="outline-btn"
+                              onClick={() => toggleExpand(session._id)}
+                            >
+                              {isExpanded ? 'Hide' : 'Details'}
+                            </button>
                           </td>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
-
-                {sessions.map((session) => (
-                  <Card key={session._id} className="mt-3 glass-effect">
-                    <Card.Body>
-                      <Card.Subtitle className="text-gradient mb-2">
-                        Session: {session._id.substring(0, 6)}...
-                      </Card.Subtitle>
-                      {session.coordinates?.length > 0 ? (
-                        <ListGroup variant="flush">
-                          {session.coordinates.map((coord, index) => (
-                            <ListGroup.Item key={coord._id || index} className="small">
-                              <div>
-                                <strong>Time:</strong> {new Date(coord.timestamp).toLocaleString()}
-                              </div>
-                              <div>
-                                <strong>Latitude:</strong> {coord.latitude.toFixed(6)},{' '}
-                                <strong>Longitude:</strong> {coord.longitude.toFixed(6)}
-                              </div>
-                              {coord.accuracy && (
-                                <div>
-                                  <strong>Accuracy:</strong> {coord.accuracy.toFixed(2)} m
-                                </div>
+                        <tr className="child-row">
+                          <td colSpan="6" className="details-cell">
+                            <div className={`collapse-content ${isExpanded ? 'expanded' : ''}`}>
+                              {session.coordinates?.length > 0 ? (
+                                <table className="nested-table">
+                                  <thead>
+                                    <tr>
+                                      <th>#</th>
+                                      <th>Time</th>
+                                      <th>Latitude</th>
+                                      <th>Longitude</th>
+                                      <th>Speed (m/s)</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {session.coordinates.map((coord, index) => (
+                                      <tr key={coord._id || index}>
+                                        <td>{index + 1}</td>
+                                        <td>{new Date(coord.timestamp).toLocaleString()}</td>
+                                        <td>{coord.latitude.toFixed(6)}</td>
+                                        <td>{coord.longitude.toFixed(6)}</td>
+                                        <td>{coord.speed ? coord.speed.toFixed(2) : '—'}</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              ) : (
+                                <p className="text-muted">No location data recorded</p>
                               )}
-                              {coord.speed && (
-                                <div>
-                                  <strong>Speed:</strong> {coord.speed.toFixed(2)} m/s
-                                </div>
-                              )}
-                            </ListGroup.Item>
-                          ))}
-                        </ListGroup>
-                      ) : (
-                        <p className="text-muted">No location data recorded</p>
-                      )}
-                    </Card.Body>
-                  </Card>
-                ))}
+                            </div>
+                          </td>
+                        </tr>
+                      </Fragment>
+                    );
+                  })}
+                </tbody>
+              </table>
 
-                {totalPages > 1 && (
-                  <div className="text-center mt-4">
-                    <Button
-                      variant="outline-primary"
-                      className="neon-btn me-2"
-                      disabled={page === 1}
-                      onClick={() => handlePageChange(page - 1)}
-                    >
-                      Previous
-                    </Button>
-                    <span className="text-light">Page {page} of {totalPages}</span>
-                    <Button
-                      variant="outline-primary"
-                      className="neon-btn ms-2"
-                      disabled={page === totalPages}
-                      onClick={() => handlePageChange(page + 1)}
-                    >
-                      Next
-                    </Button>
-                  </div>
-                )}
-              </>
-            )}
-          </Card.Body>
-        </Card>
-      </Container>
+              {totalPages > 1 && (
+                <div className="pagination">
+                  <button
+                    className="outline-btn"
+                    disabled={page === 1}
+                    onClick={() => handlePageChange(page - 1)}
+                  >
+                    Previous
+                  </button>
+                  <span className="page-info">Page {page} of {totalPages}</span>
+                  <button
+                    className="outline-btn"
+                    disabled={page === totalPages}
+                    onClick={() => handlePageChange(page + 1)}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Logo from '../../assets/logo-2.png';
 import './header.css';
 
-const NoHeaderPath = () => ['/login', '/signup',"/forgot-password"];
+const NoHeaderPath = () => ['/login', '/signup', '/forgot-password'];
 
 function Header() {
   const location = useLocation();
@@ -37,12 +37,12 @@ function Header() {
                 <Link to="/dashboard" className={location.pathname === '/dashboard' ? 'active' : ''}>Dashboard</Link>
                 <Link to="/settings" className={location.pathname === '/settings' ? 'active' : ''}>Settings</Link>
                 <span className="user-greeting">Hi, {user?.userID || 'User'}</span>
-                <button onClick={handleLogout} className="btn-outline">Logout</button>
+                <button onClick={handleLogout} className="outline-btn">Logout</button>
               </>
             ) : (
               <>
-                <Link to="/login" className="btn-outline">Login</Link>
-                <Link to="/signup" className="btn-glow">Signup</Link>
+                <Link to="/login" className="outline-btn">Login</Link>
+                <Link to="/signup" className="glow-btn">Signup</Link>
               </>
             )}
           </nav>
@@ -67,7 +67,7 @@ function Header() {
         ) : (
           <>
             <Link to="/login" onClick={() => setMenuOpen(false)}>Login</Link>
-            <Link to="/signup" onClick={() => setMenuOpen(false)} className="btn-glow">Signup</Link>
+            <Link to="/signup" onClick={() => setMenuOpen(false)} className="glow-btn">Signup</Link>
           </>
         )}
       </div>

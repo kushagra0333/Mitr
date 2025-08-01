@@ -9,7 +9,6 @@ const api = axios.create({
   },
 });
 
-// Add token to requests
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('mitr-token');
   if (token) {
@@ -39,10 +38,11 @@ export const login = async (data) => {
     throw new Error(error.response?.data?.message || 'Login failed');
   }
 };
+
 export const signupInitiate = async (data) => {
   try {
     const response = await api.post('/auth/signup/initiate', data);
-    return response.data; // Make sure to return response.data
+    return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Signup initiation failed');
   }
@@ -51,11 +51,13 @@ export const signupInitiate = async (data) => {
 export const signupComplete = async (data) => {
   try {
     const response = await api.post('/auth/signup/complete', data);
-    return response.data; // This should now have the token in response.data.data.token
+    return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Signup completion failed');
   }
-};export const forgotPassword = async (data) => {
+};
+
+export const forgotPassword = async (data) => {
   try {
     const response = await api.post('/auth/forgot-password', data);
     return response;
@@ -99,7 +101,9 @@ export const getProfile = async () => {
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch profile');
   }
-};export const changePassword = async (data) => {
+};
+
+export const changePassword = async (data) => {
   try {
     const response = await api.post('/user/change-password', data);
     return response;
@@ -125,6 +129,7 @@ export const deleteAccount = async () => {
     throw new Error(error.response?.data?.message || 'Failed to delete account');
   }
 };
+
 // ====================== DEVICE ======================
 export const createDevice = async (data, apiKey) => {
   try {
@@ -157,7 +162,7 @@ export const getDevice = async (deviceId) => {
 
 export const updateEmergencyContacts = async (deviceId, contacts) => {
   try {
-    const response = await api.put(`/device/${deviceId}/emergency-contacts`, { contacts });
+    const response = await api.put(`/device/${deviceId}/emergency-contacts`, { emergencyContacts: contacts });
     return response;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to update emergency contacts');
@@ -166,7 +171,7 @@ export const updateEmergencyContacts = async (deviceId, contacts) => {
 
 export const updateTriggerWords = async (deviceId, words) => {
   try {
-    const response = await api.put(`/device/${deviceId}/trigger-words`, { words });
+    const response = await api.put(`/device/${deviceId}/trigger-words`, { triggerWords: words });
     return response;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to update trigger words');
@@ -261,8 +266,8 @@ export const getActiveSessions = async () => {
   }
 };
 
-export default {
-  // Auth
+// Assign to a named variable before exporting
+const apiService = {
   login,
   signupInitiate,
   signupComplete,
@@ -270,21 +275,15 @@ export default {
   resetPassword,
   logout,
   logoutAll,
-
-  // User
   getProfile,
   changePassword,
   deleteAccount,
   updateUserInfo,
-
-  // Device
   createDevice,
   linkDevice,
   getDevice,
   updateEmergencyContacts,
   updateTriggerWords,
-
-  // Session
   startTrigger,
   addCoordinates,
   stopTrigger,
@@ -294,3 +293,5 @@ export default {
   getCurrentLocation,
   getActiveSessions
 };
+
+export default apiService;
