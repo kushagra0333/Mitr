@@ -57,7 +57,7 @@ function TriggerHistory() {
 
   if (loading) {
     return (
-      <div className="trigger-history-background">
+      <div className="trigger-history-background loading-screen">
         <div className="trigger-history-container text-center">
           <div className="spinner"></div>
           <p className="loading-text">Loading trigger history...</p>

@@ -113,3 +113,18 @@
   margin-bottom: 15px;
   text-align: center;
 }
+/* TriggerHistory.css */
+
+table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+td, th {
+  vertical-align: middle !important;
+}
+
+.map-popup {
+  font-size: 14px;
+  color: #000;
+}

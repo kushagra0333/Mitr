@@ -200,7 +200,7 @@ function DeviceDetails() {
 
   if (loading) {
     return (
-      <div className="device-details-background">
+      <div className="device-details-background loading-screen">
         <Container className="device-details-container text-center py-5">
           <Spinner animation="border" variant="primary" />
           <p className="mt-3">Loading device details...</p>

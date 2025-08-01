@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Container, Card, Button, ListGroup, Spinner, Alert, Row, Col } from 'react-bootstrap';
@@ -63,7 +63,7 @@ function MapPage() {
 
   if (!session) {
     return (
-      <div className="map-page-background">
+      <div className="map-page-background loading-screen">
         <Container className="map-page-container py-5">
           <Alert variant="danger">
             {error || 'Session not found'}
@@ -85,6 +85,8 @@ function MapPage() {
   const latestLocation = session.coordinates?.length > 0
     ? session.coordinates[session.coordinates.length - 1]
     : null;
+
+  const pathCoordinates = session.coordinates.map(coord => [coord.latitude, coord.longitude]);
 
   return (
     <div className="map-page-background">
@@ -148,6 +150,11 @@ function MapPage() {
                           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         />
+
+                        {/* Draw the path line */}
+                        <Polyline positions={pathCoordinates} color="blue" weight={4} />
+
+                        {/* Mark each coordinate */}
                         {session.coordinates.map((coord, index) => (
                           <Marker
                             key={coord._id || index}
