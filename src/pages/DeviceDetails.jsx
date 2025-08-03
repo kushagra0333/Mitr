@@ -373,7 +373,7 @@ function DeviceDetails() {
                         <MapContainer
                           center={currentLocation ? [currentLocation.latitude, currentLocation.longitude] : [0, 0]}
                           zoom={currentLocation ? 15 : 2}
-                          style={{ height: '100%', width: '100%' }}
+                          style={{ height: '190px', width: '100%' }}
                           whenCreated={(map) => {
                             mapRef.current = map;
                             map.invalidateSize();
@@ -419,6 +419,15 @@ function DeviceDetails() {
                     </Col>
                   </Row>
                 </Card.Body>
+                <div className="text-center mt-3">
+                  <Button
+                    variant="primary"
+                    className="neon-btn"
+                    onClick={() => navigate(`/map-live/${deviceId}`)}
+                  >
+                    View Full Map
+                  </Button>
+                </div>
               </Card>
             ) : (
               <Card className="glass-effect animate-slide-up">

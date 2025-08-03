@@ -145,196 +145,179 @@
       No location data sent yet
     </div>
   </div>
+<script>
+  const deviceIdInput = document.getElementById('deviceId');
+  const intervalInput = document.getElementById('interval');
+  const triggerBtn = document.getElementById('triggerBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const statusText = document.getElementById('statusText');
+  const lastUpdate = document.getElementById('lastUpdate');
+  const locationData = document.getElementById('locationData');
+  const statusDiv = document.getElementById('status');
 
-  <script>
-    const deviceIdInput = document.getElementById('deviceId');
-    const latitudeInput = document.getElementById('latitude');
-    const longitudeInput = document.getElementById('longitude');
-    const intervalInput = document.getElementById('interval');
-    const triggerBtn = document.getElementById('triggerBtn');
-    const stopBtn = document.getElementById('stopBtn');
-    const statusText = document.getElementById('statusText');
-    const lastUpdate = document.getElementById('lastUpdate');
-    const locationData = document.getElementById('locationData');
-    const statusDiv = document.getElementById('status');
+  let isTriggerActive = false;
+  let intervalId = null;
+  let updateCount = 0;
+  let sessionStartTime = null;
+  let sessionLocations = [];
 
-    let isTriggerActive = false;
-    let intervalId = null;
-    let updateCount = 0;
-    let sessionStartTime = null;
-    let sessionLocations = [];
-    let currentLat = null;
-    let currentLon = null;
+  const STATIC_LAT = 28.49324016508249;
+  const STATIC_LNG = 77.09265314869027;
 
-    const API_BASE_URL = 'http://localhost:5000/api';
-    const API_KEY = 'mitr@2025';
+  const API_BASE_URL = 'https://mitr-new-api.onrender.com/api';
+  const API_KEY = 'mitr@2025';
 
-    async function sendLocationData(deviceId, location) {
-      const response = await fetch(`${API_BASE_URL}/sessions/coordinates`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': API_KEY,
-        },
-        body: JSON.stringify({
-          deviceId,
-          latitude: location.lat,
-          longitude: location.lng,
-        }),
-      });
+  async function sendLocationData(deviceId, location) {
+    const response = await fetch(`${API_BASE_URL}/sessions/coordinates`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+      },
+      body: JSON.stringify({
+        deviceId,
+        latitude: location.lat,
+        longitude: location.lng,
+      }),
+    });
 
-      if (!response.ok) throw new Error(`Status: ${response.status}`);
-      return await response.json();
+    if (!response.ok) throw new Error(`Status: ${response.status}`);
+    return await response.json();
+  }
+
+  async function startTriggerSession(deviceId) {
+    const response = await fetch(`${API_BASE_URL}/sessions/start`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+      },
+      body: JSON.stringify({
+        deviceId,
+        initialLocation: { latitude: STATIC_LAT, longitude: STATIC_LNG },
+      }),
+    });
+
+    if (!response.ok) throw new Error(`Session start failed: ${response.statusText}`);
+    return await response.json();
+  }
+
+  async function stopTriggerSession(deviceId) {
+    const response = await fetch(`${API_BASE_URL}/sessions/stop`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+      },
+      body: JSON.stringify({ deviceId }),
+    });
+
+    if (!response.ok) throw new Error(`Session stop failed: ${response.statusText}`);
+    return await response.json();
+  }
+
+  async function triggerLocationUpdates() {
+    const deviceId = deviceIdInput.value.trim();
+    const intervalSeconds = parseInt(intervalInput.value);
+
+    if (!deviceId || isNaN(intervalSeconds)) {
+      alert('Enter valid Device ID and Interval');
+      return;
     }
 
-    async function startTriggerSession(deviceId, initialLocation) {
-      const response = await fetch(`${API_BASE_URL}/sessions/start`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': API_KEY,
-        },
-        body: JSON.stringify({
-          deviceId,
-          initialLocation: { latitude: initialLocation.lat, longitude: initialLocation.lng },
-        }),
-      });
+    try {
+      statusText.innerHTML = '<span class="loading"></span> Starting session...';
+      await startTriggerSession(deviceId);
 
-      if (!response.ok) throw new Error(`Session start failed: ${response.statusText}`);
-      return await response.json();
+      sessionStartTime = new Date();
+      isTriggerActive = true;
+      updateCount = 0;
+      sessionLocations = [];
+
+      triggerBtn.disabled = true;
+      stopBtn.disabled = false;
+      deviceIdInput.disabled = true;
+      intervalInput.disabled = true;
+
+      statusText.textContent = 'Active';
+      statusDiv.className = 'status active';
+
+      const update = async () => {
+        try {
+          const location = { lat: STATIC_LAT, lng: STATIC_LNG };
+          updateCount++;
+          lastUpdate.textContent = `Last update: ${new Date().toLocaleTimeString()}`;
+
+          const result = await sendLocationData(deviceId, location);
+
+          sessionLocations.push({
+            update: updateCount,
+            time: new Date().toLocaleTimeString(),
+            lat: location.lat.toFixed(6),
+            lng: location.lng.toFixed(6),
+            serverRes: result,
+          });
+
+          locationData.textContent = sessionLocations.map(loc => 
+            `#${loc.update} at ${loc.time}\n- Lat: ${loc.lat}, Lng: ${loc.lng}\n- Server: ${JSON.stringify(loc.serverRes)}\n`).join('\n');
+        } catch (err) {
+          locationData.textContent = `Update Error: ${err.message}\n\n${locationData.textContent}`;
+        }
+      };
+
+      update(); // First update immediately
+      intervalId = setInterval(update, intervalSeconds * 1000);
+
+    } catch (err) {
+      statusText.textContent = 'Error';
+      alert(err.message);
+      resetUI();
     }
+  }
 
-    async function stopTriggerSession(deviceId) {
-      const response = await fetch(`${API_BASE_URL}/sessions/stop`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': API_KEY,
-        },
-        body: JSON.stringify({ deviceId }),
-      });
+  async function stopTriggering() {
+    const deviceId = deviceIdInput.value.trim();
 
-      if (!response.ok) throw new Error(`Session stop failed: ${response.statusText}`);
-      return await response.json();
-    }
+    try {
+      statusText.innerHTML = '<span class="loading"></span> Stopping...';
+      await stopTriggerSession(deviceId);
 
-    async function triggerLocationUpdates() {
-      const deviceId = deviceIdInput.value.trim();
-      const intervalSeconds = parseInt(intervalInput.value);
-      const initialLat = parseFloat(latitudeInput.value);
-      const initialLon = parseFloat(longitudeInput.value);
-
-      if (!deviceId || isNaN(intervalSeconds) || isNaN(initialLat) || isNaN(initialLon)) {
-        alert('Enter valid Device ID, Latitude, Longitude, and Interval');
-        return;
-      }
-
-      try {
-        statusText.innerHTML = '<span class="loading"></span> Starting session...';
-        await startTriggerSession(deviceId, { lat: initialLat, lng: initialLon });
-
-        sessionStartTime = new Date();
-        isTriggerActive = true;
-        updateCount = 0;
-        sessionLocations = [];
-        currentLat = initialLat;
-        currentLon = initialLon;
-
-        triggerBtn.disabled = true;
-        stopBtn.disabled = false;
-        deviceIdInput.disabled = true;
-        latitudeInput.disabled = true;
-        longitudeInput.disabled = true;
-        intervalInput.disabled = true;
-
-        statusText.textContent = 'Active';
-        statusDiv.className = 'status active';
-
-        const update = async () => {
-          try {
-            // Random offset between ±0.0001 and ±0.0005 (~11–55 meters)
-            const latOffset = (Math.random() * 0.0004 + 0.0001) * (Math.random() < 0.5 ? 1 : -1);
-            const lonOffset = (Math.random() * 0.0004 + 0.0001) * (Math.random() < 0.5 ? 1 : -1);
-            currentLat += latOffset;
-            currentLon += lonOffset;
-
-            const location = { lat: currentLat, lng: currentLon };
-            updateCount++;
-            lastUpdate.textContent = `Last update: ${new Date().toLocaleTimeString()}`;
-
-            const result = await sendLocationData(deviceId, location);
-
-            sessionLocations.push({
-              update: updateCount,
-              time: new Date().toLocaleTimeString(),
-              lat: location.lat.toFixed(6),
-              lng: location.lng.toFixed(6),
-              serverRes: result,
-            });
-
-            locationData.textContent = sessionLocations.map(loc => 
-              `#${loc.update} at ${loc.time}\n- Lat: ${loc.lat}, Lng: ${loc.lng}\n- Server: ${JSON.stringify(loc.serverRes)}\n`).join('\n');
-          } catch (err) {
-            locationData.textContent = `Update Error: ${err.message}\n\n${locationData.textContent}`;
-          }
-        };
-
-        update(); // First update immediately
-        intervalId = setInterval(update, intervalSeconds * 1000);
-
-      } catch (err) {
-        statusText.textContent = 'Error';
-        alert(err.message);
-        resetUI();
-      }
-    }
-
-    async function stopTriggering() {
-      const deviceId = deviceIdInput.value.trim();
-
-      try {
-        statusText.innerHTML = '<span class="loading"></span> Stopping...';
-        await stopTriggerSession(deviceId);
-
-        clearInterval(intervalId);
-        isTriggerActive = false;
-        statusText.textContent = 'Inactive';
-        statusDiv.className = 'status inactive';
-        lastUpdate.textContent = `Session ended at ${new Date().toLocaleTimeString()}`;
-
-        triggerBtn.disabled = false;
-        stopBtn.disabled = true;
-        deviceIdInput.disabled = false;
-        latitudeInput.disabled = false;
-        longitudeInput.disabled = false;
-        intervalInput.disabled = false;
-      } catch (err) {
-        alert('Failed to stop session: ' + err.message);
-      }
-    }
-
-    function resetUI() {
-      isTriggerActive = false;
       clearInterval(intervalId);
+      isTriggerActive = false;
+      statusText.textContent = 'Inactive';
+      statusDiv.className = 'status inactive';
+      lastUpdate.textContent = `Session ended at ${new Date().toLocaleTimeString()}`;
+
       triggerBtn.disabled = false;
       stopBtn.disabled = true;
       deviceIdInput.disabled = false;
-      latitudeInput.disabled = false;
-      longitudeInput.disabled = false;
       intervalInput.disabled = false;
-      statusText.textContent = 'Inactive';
-      statusDiv.className = 'status inactive';
+    } catch (err) {
+      alert('Failed to stop session: ' + err.message);
     }
+  }
 
-    triggerBtn.addEventListener('click', triggerLocationUpdates);
-    stopBtn.addEventListener('click', stopTriggering);
+  function resetUI() {
+    isTriggerActive = false;
+    clearInterval(intervalId);
+    triggerBtn.disabled = false;
+    stopBtn.disabled = true;
+    deviceIdInput.disabled = false;
+    intervalInput.disabled = false;
+    statusText.textContent = 'Inactive';
+    statusDiv.className = 'status inactive';
+  }
 
-    window.addEventListener('beforeunload', (e) => {
-      if (isTriggerActive) {
-        e.preventDefault();
-        e.returnValue = 'Session is active. Exit?';
-      }
-    });
-  </script>
+  triggerBtn.addEventListener('click', triggerLocationUpdates);
+  stopBtn.addEventListener('click', stopTriggering);
+
+  window.addEventListener('beforeunload', (e) => {
+    if (isTriggerActive) {
+      e.preventDefault();
+      e.returnValue = 'Session is active. Exit?';
+    }
+  });
+</script>
+
 </body>
 </html>

@@ -96,10 +96,8 @@
 .map-container {
   width: 100%;
   height: 100%;
-  min-height: 170px;
-  max-height: 170px; /* Ensure minimum height for small screens */
-  border-radius: 12px;
-  overflow: hidden;
+  min-height: 190px;
+  max-height: 190px; 
 }
 
 .list-group-item {
@@ -194,7 +192,7 @@
 
 @media (max-width: 480px) {
   .map-container {
-    min-height: 200px;
+    min-height: 170px;
   }
 
   .data-table table {
