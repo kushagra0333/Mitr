@@ -159,7 +159,6 @@ function TriggerHistory() {
                                       <th>Time</th>
                                       <th>Latitude</th>
                                       <th>Longitude</th>
-                                      <th>Speed (m/s)</th>
                                     </tr>
                                   </thead>
                                   <tbody>
@@ -169,7 +168,6 @@ function TriggerHistory() {
                                         <td>{new Date(coord.timestamp).toLocaleString()}</td>
                                         <td>{coord.latitude.toFixed(6)}</td>
                                         <td>{coord.longitude.toFixed(6)}</td>
-                                        <td>{coord.speed ? coord.speed.toFixed(2) : '—'}</td>
                                       </tr>
                                     ))}
                                   </tbody>

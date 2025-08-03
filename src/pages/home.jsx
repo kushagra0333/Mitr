@@ -3,6 +3,7 @@ import Hero from '../components/hero';
 import About from '../components/about'
 import HowItWorks from "../components/HowItWorks"
 import Features from '../components/Feature';
+import Footer from '../components/footer/footer';
 import ContactUs from '../components/contact';
 import UseCase from '../components/useCase';
 import './home.css';
@@ -14,8 +15,10 @@ const Home = ()=>{
             <UseCase />
             <Features />
             <HowItWorks />
-            <ContactUs />
+            {/* <ContactUs /> */}
+
             
+            <Footer />
         </div>
     )
 }

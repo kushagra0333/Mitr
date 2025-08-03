@@ -23,9 +23,7 @@ const About = () => {
             You can manage your device, update contacts, and customize triggers directly from our platform.
             With MITR, personal safety meets seamless technology.
           </p>
-          <button className="learn-btn">
-            Learn More <FaArrowAltCircleRight className="btn-icon" />
-          </button>
+       
         </div>
 
         {/* Right Image */}

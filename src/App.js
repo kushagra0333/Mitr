@@ -33,7 +33,7 @@ const App = () => {
         <Route path="/map-live/:deviceId" element={<MapLive />} />
         <Route path="*" element={<Home />} />
       </Routes>
-      <Footer />
+     
     </Router>
   );
 };
